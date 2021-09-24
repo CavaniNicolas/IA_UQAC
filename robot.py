@@ -1,14 +1,16 @@
 import random
 
+from common import *
+
 class Robot:
     def __init__(self, i, j):
-        self.__roomsState = [[random.randint(0, 3) for j in range(5)] for i in range(5)]
+        self.__roomsState = [[random.randint(0, 3) for j in range(mansionSize)] for i in range(mansionSize)]
 
         # # Get all rooms state
-        # for i in range(5):
-        #     for j in range(5):
+        # for i in range(mansionSize):
+        #     for j in range(mansionSize):
         #         self.__roomsState[i][j] = world.getRoomState(i, j)
-        
+
         self.__energyUsed = 0
         self.__i = i
         self.__j = j
@@ -49,15 +51,15 @@ class Robot:
         print("make action")
 
     def printRoomsState(self):
-        for i in range(5):
-            for j in range(5):
+        for i in range(mansionSize):
+            for j in range(mansionSize):
                 print(self.__roomsState[i][j], end=" ")
             print()
 
     def printWorld(self):
         print()
-        for i in range(5):
-            for j in range(5):
+        for i in range(mansionSize):
+            for j in range(mansionSize):
                 if (i == self.__i and j == self.__j):
                     print("[{0}]".format(self.__roomsState[i][j]), end="")
                 else:

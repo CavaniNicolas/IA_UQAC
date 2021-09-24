@@ -1,0 +1,2 @@
+
+mansionSize = 3

@@ -5,6 +5,7 @@ from robot import Robot
 from problem import Problem
 from state import State
 
+from common import *
 
 def treeSearch(problem, initialNode):
     fringe = [initialNode]
@@ -24,8 +25,8 @@ def treeSearch(problem, initialNode):
 
 
 def tp1GoalTest(state):
-    for i in range(5):
-        for j in range(5):
+    for i in range(mansionSize):
+        for j in range(mansionSize):
             if state.getRoomsState()[i][j] != 0:
                 return False
     return True
@@ -39,18 +40,18 @@ def tp1SuccessorFn(state):
 
     # successors with cleaning action (exclude "do nothing" action when room is clean)
     if roomsState[robotPosition[0]][robotPosition[1]] != 0:
-        tmpRoomsState = [roomsState[i][:] for i in range(5)]
+        tmpRoomsState = [roomsState[i][:] for i in range(mansionSize)]
         tmpRoomsState[robotPosition[0]][robotPosition[1]] = 0
         successors.append(State(tmpRoomsState, robotPosition))
     else :
         # successors with movement action
         if robotPosition[0] > 0:
             successors.append(State(state.getRoomsState(), [robotPosition[0] - 1, robotPosition[1]]))
-        if robotPosition[0] < 4:
+        if robotPosition[0] < mansionSize - 1:
             successors.append(State(state.getRoomsState(), [robotPosition[0] + 1, robotPosition[1]]))
         if robotPosition[1] > 0:
             successors.append(State(state.getRoomsState(), [robotPosition[0], robotPosition[1] - 1]))
-        if robotPosition[1] < 4:
+        if robotPosition[1] < mansionSize - 1:
             successors.append(State(state.getRoomsState(), [robotPosition[0], robotPosition[1] + 1]))
 
     return successors
@@ -65,7 +66,7 @@ if __name__ == "__main__":
     #         break
 
     problem = Problem(tp1GoalTest, tp1SuccessorFn)
-    randomRoomState = [[random.randint(0, 3) for j in range(5)] for i in range(5)]
+    randomRoomState = [[random.randint(0, 3) for j in range(mansionSize)] for i in range(mansionSize)]
     initialState = State(randomRoomState, [0, 0])
 
     initialNode = Node(initialState, None, None, 0, 0)
