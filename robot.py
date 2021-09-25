@@ -1,16 +1,8 @@
-import random
 
-from common import *
+import random
 
 class Robot:
     def __init__(self, i, j):
-        self.__mansionState = [[random.randint(0, 3) for j in range(mansionSize)] for i in range(mansionSize)]
-
-        # # Get all rooms state
-        # for i in range(mansionSize):
-        #     for j in range(mansionSize):
-        #         self.__mansionState[i][j] = world.getRoomState(i, j)
-
         self.__energyUsed = 0
         self.__i = i
         self.__j = j
@@ -40,32 +32,11 @@ class Robot:
     def setPerformanceMeasure(self, measure):
         self.__performanceMeasure = measure
 
-    def percept(self):
-        # update rooms state
-        pass
-
     def chooseAction(self):
         print("choose action")
 
     def makeAction(self):
         print("make action")
-
-    def printRoomsState(self):
-        for i in range(mansionSize):
-            for j in range(mansionSize):
-                print(self.__mansionState[i][j], end=" ")
-            print()
-
-    def printWorld(self):
-        print()
-        for i in range(mansionSize):
-            for j in range(mansionSize):
-                if (i == self.__i and j == self.__j):
-                    print("[{0}]".format(self.__mansionState[i][j]), end="")
-                else:
-                    print(" {0} ".format(self.__mansionState[i][j]), end="")
-            print()
-        print()
 
     def goToRoom(self, i, j):
         if (self.__i == i and self.__j == j):
