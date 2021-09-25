@@ -4,12 +4,12 @@ from common import *
 
 class Robot:
     def __init__(self, i, j):
-        self.__roomsState = [[random.randint(0, 3) for j in range(mansionSize)] for i in range(mansionSize)]
+        self.__mansionState = [[random.randint(0, 3) for j in range(mansionSize)] for i in range(mansionSize)]
 
         # # Get all rooms state
         # for i in range(mansionSize):
         #     for j in range(mansionSize):
-        #         self.__roomsState[i][j] = world.getRoomState(i, j)
+        #         self.__mansionState[i][j] = world.getRoomState(i, j)
 
         self.__energyUsed = 0
         self.__i = i
@@ -53,7 +53,7 @@ class Robot:
     def printRoomsState(self):
         for i in range(mansionSize):
             for j in range(mansionSize):
-                print(self.__roomsState[i][j], end=" ")
+                print(self.__mansionState[i][j], end=" ")
             print()
 
     def printWorld(self):
@@ -61,9 +61,9 @@ class Robot:
         for i in range(mansionSize):
             for j in range(mansionSize):
                 if (i == self.__i and j == self.__j):
-                    print("[{0}]".format(self.__roomsState[i][j]), end="")
+                    print("[{0}]".format(self.__mansionState[i][j]), end="")
                 else:
-                    print(" {0} ".format(self.__roomsState[i][j]), end="")
+                    print(" {0} ".format(self.__mansionState[i][j]), end="")
             print()
         print()
 

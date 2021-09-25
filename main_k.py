@@ -4,6 +4,7 @@ from node import Node
 from robot import Robot
 from problem import Problem
 from state import State
+from mansion import Mansion
 
 from common import *
 
@@ -27,7 +28,7 @@ def treeSearch(problem, initialNode):
 def tp1GoalTest(state):
     for i in range(mansionSize):
         for j in range(mansionSize):
-            if state.getRoomsState()[i][j] != 0:
+            if state.getMansionState()[i][j] != 0:
                 return False
     return True
 
@@ -36,23 +37,23 @@ def tp1SuccessorFn(state):
     successors = []
 
     robotPosition = state.getRobotPosition()
-    roomsState = state.getRoomsState()
+    roomsState = state.getMansionState()
 
     # successors with cleaning action (exclude "do nothing" action when room is clean)
     if roomsState[robotPosition[0]][robotPosition[1]] != 0:
         tmpRoomsState = [roomsState[i][:] for i in range(mansionSize)]
         tmpRoomsState[robotPosition[0]][robotPosition[1]] = 0
-        successors.append(State(tmpRoomsState, robotPosition))
+        successors.append(State(Mansion(state.getMansion().getMansionSize(), robotPosition, tmpRoomsState)))
     else :
         # successors with movement action
         if robotPosition[0] > 0:
-            successors.append(State(state.getRoomsState(), [robotPosition[0] - 1, robotPosition[1]]))
+            successors.append(State(Mansion(state.getMansion().getMansionSize(), [robotPosition[0] - 1, robotPosition[1]], state.getMansionState())))
         if robotPosition[0] < mansionSize - 1:
-            successors.append(State(state.getRoomsState(), [robotPosition[0] + 1, robotPosition[1]]))
+            successors.append(State(Mansion(state.getMansion().getMansionSize(), [robotPosition[0] + 1, robotPosition[1]], state.getMansionState())))
         if robotPosition[1] > 0:
-            successors.append(State(state.getRoomsState(), [robotPosition[0], robotPosition[1] - 1]))
+            successors.append(State(Mansion(state.getMansion().getMansionSize(), [robotPosition[0], robotPosition[1] - 1], state.getMansionState())))
         if robotPosition[1] < mansionSize - 1:
-            successors.append(State(state.getRoomsState(), [robotPosition[0], robotPosition[1] + 1]))
+            successors.append(State(Mansion(state.getMansion().getMansionSize(), [robotPosition[0], robotPosition[1] + 1], state.getMansionState())))
 
     return successors
 
@@ -66,10 +67,13 @@ if __name__ == "__main__":
     #         break
 
     problem = Problem(tp1GoalTest, tp1SuccessorFn)
-    randomRoomState = [[random.randint(0, 3) for j in range(mansionSize)] for i in range(mansionSize)]
-    initialState = State(randomRoomState, [0, 0])
+    mansion = Mansion(3)
+    mansionInitialState = State(mansion)
 
-    initialNode = Node(initialState, None, None, 0, 0)
+
+    print(mansionInitialState)
+
+    initialNode = Node(mansionInitialState, None, None, 0, 0)
 
     print()
 
