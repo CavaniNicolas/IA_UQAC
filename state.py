@@ -1,18 +1,20 @@
-from common import *
 
 class State:
-    def __init__(self, mansion):
+    def __init__(self, mansion, robot):
         self.__mansion = mansion
-        self.__robotPosition = mansion.getRobotPosition()
+        self.__robot = robot
+
+    def getMansion(self):
+        return self.__mansion
 
     def getMansionState(self):
         return self.__mansion.getRooms()
 
-    def getRobotPosition(self):
-        return self.__robotPosition
+    def getRobot(self):
+        return self.__robot
 
-    def getMansion(self):
-        return self.__mansion
+    def getRobotPosition(self):
+        return self.__robot.getPosition()
 
     def __str__(self):
         str = ""
@@ -28,4 +30,4 @@ class State:
         return str
 
     def __eq__(self, other):
-        return self.getMansionState() == other.getMansionState() and self.__robotPosition == other.getRobotPosition()
+        return self.getMansionState() == other.getMansionState() and self.getRobotPosition() == other.getRobotPosition()

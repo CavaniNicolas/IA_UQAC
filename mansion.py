@@ -1,46 +1,71 @@
 
 import random
 
+from room import Room
+
 class Mansion:
-    __rooms = list(list())
-
-
-    def __init__(self, mansionSize, robotPosition = [0, 0], rooms = None):
+    def __init__(self, mansionSize, rooms = None):
         self.__mansionSize = mansionSize
         if (rooms == None):
-            self.__rooms = [[random.randint(0, 3) for j in range(self.__mansionSize)] for i in range(self.__mansionSize)]
+            self.__rooms = [[Room(i, j, random.randint(0, 1), random.randint(0, 1)) for j in range(self.__mansionSize)] for i in range(self.__mansionSize)]
         else:
             self.__rooms = rooms
-        self.__robotPosition = robotPosition
         # self.generateRandomDirt(5)
         # self.generateRandomJewel(2)
+        self.__nbOfDirt = 0
+        self.__nbOfJewels = 0
+
+        for i in range(mansionSize):
+            for j in range(mansionSize):
+                if self.__rooms[i][j].getHasDirt():
+                    self.__nbOfDirt += 1
+                if self.__rooms[i][j].getHasJewel():
+                    self.__nbOfJewels += 1
 
     def getRooms(self):
         return self.__rooms
 
-    def getRobotPosition(self):
-        return self.__robotPosition
-
     def getMansionSize(self):
         return self.__mansionSize
 
+    def getRoomState(self, i, j):
+        return self.__rooms[i][j].getState()
 
-    def getRoomState(self, x=None, y=None):
-        return self.__rooms  # [x][y]
+    def getDirtAndJewelsLeft(self):
+        return [self.__nbOfDirt, self.__nbOfJewels]
 
-    def generateRandomDirt(self, n):
-        for i in range(n):
-            x = random.randint(0, self.__mansionSize)
-            y = random.randint(0, self.__mansionSize)
-            if self.__rooms[x][y] != 1 and self.__rooms[x][y] != 3:
-                self.__rooms[x][y] += 1
+    def cleanRoom(self, i, j):
+        if (self.__rooms[i][j].getState() == 1):
+            self.__nbOfDirt -= 1
 
-    def generateRandomJewel(self, n):
-        for i in range(n):
-            x = random.randint(0, self.__mansionSize)
-            y = random.randint(0, self.__mansionSize)
-            if self.__rooms[x][y] != 2 and self.__rooms[x][y] != 3:
-                self.__rooms[random.randint(0, self.__mansionSize)][random.randint(0, self.__mansionSize)] += 2
+        elif (self.__rooms[i][j].getState() == 2):
+            self.__nbOfJewels -= 1
+
+        elif (self.__rooms[i][j].getState() == 3):
+            self.__nbOfDirt -= 1
+            self.__nbOfJewels -= 1
+
+        self.__rooms[i][j].clean()
+
+    def pickupJewelInRoom(self, i, j):
+        if (self.__rooms[i][j].getState() >= 2):
+            self.__nbOfJewels -= 1
+
+        self.__rooms[i][j].pickupJewel()
+
+    # def generateRandomDirt(self, n):
+    #     for i in range(n):
+    #         x = random.randint(0, self.__mansionSize)
+    #         y = random.randint(0, self.__mansionSize)
+    #         if self.__rooms[x][y] != 1 and self.__rooms[x][y] != 3:
+    #             self.__rooms[x][y] += 1
+
+    # def generateRandomJewel(self, n):
+    #     for i in range(n):
+    #         x = random.randint(0, self.__mansionSize)
+    #         y = random.randint(0, self.__mansionSize)
+    #         if self.__rooms[x][y] != 2 and self.__rooms[x][y] != 3:
+    #             self.__rooms[random.randint(0, self.__mansionSize)][random.randint(0, self.__mansionSize)] += 2
 
     def __str__(self):
         str = ""

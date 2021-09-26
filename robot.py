@@ -2,11 +2,15 @@
 import random
 
 class Robot:
-    def __init__(self, i, j):
-        self.__energyUsed = 0
+    def __init__(self, i, j, mansion=None):
         self.__i = i
         self.__j = j
+        self.__energyUsed = 0
         self.__performanceMeasure = 0
+        self.__mansionView = mansion # a verifier par rapport a la copie / reference
+        # remember the number of times the robot went through those rooms
+        self.__visitedRooms = [[0 for j in range(mansion.getMansionSize())] for i in range(mansion.getMansionSize())]
+        self.__maxVisitsPerRoom = 1
 
     def getEnergyUsed(self):
         return self.__energyUsed
@@ -25,6 +29,22 @@ class Robot:
 
     def setJ(self, j):
         self.__j = j
+
+    def getPosition(self):
+        return [self.__i,  self.__j]
+
+    def setPosition(self, i, j):
+        self.__i = i
+        self.__j = j
+
+    def hasRoomBeenVisited(self, i, j):
+        return self.__visitedRooms[i][j]
+
+    def getMaxVisitsPerRoom(self):
+        return self.__maxVisitsPerRoom
+
+    def visitRoom(self, i, j):
+        self.__visitedRooms[i][j] += 1
 
     def getPerformanceMeasure(self):
         return self.__performanceMeasure
