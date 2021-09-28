@@ -70,14 +70,20 @@ def tp1SuccessorFn(state):
     return successors
 
 
-robotIsAlive = True
+isRunning = True
 
 
 def robotThreadFn(robot, mansion, problem):
-    while robotIsAlive:
+    while isRunning:
         robot.percept(mansion)
         robot.chooseActionDFS(problem)
         robot.makeAction()
+        time.sleep(1)
+
+
+def mansionThreadFn(mansion):
+    while isRunning:
+        # TODO: generate dirt and jewel
         time.sleep(1)
 
 
@@ -88,6 +94,10 @@ if __name__ == "__main__":
     mansion = Mansion(5)
     robot = Robot(0, 0, mansion)
 
+    # start the mansion thread
+    mansionThread = threading.Thread(target=mansionThreadFn, args=[mansion])
+    mansionThread.start()
+
     # start the robot thread
     robotThread = threading.Thread(target=robotThreadFn, args=[robot, mansion, problem])
     robotThread.start()
@@ -97,4 +107,4 @@ if __name__ == "__main__":
 
     # wait for user input to exit the application
     input()
-    robotIsAlive = False
+    isRunning = False
