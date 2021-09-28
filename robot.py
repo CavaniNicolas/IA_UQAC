@@ -1,5 +1,8 @@
-
+import copy
 import random
+
+from node import Node
+from state import State
 
 class Robot:
     def __init__(self, i, j, mansion=None):
@@ -52,8 +55,47 @@ class Robot:
     def setPerformanceMeasure(self, measure):
         self.__performanceMeasure = measure
 
-    def chooseAction(self):
-        print("choose action")
+    def getMansionView(self):
+        return self.__mansionView
+
+    def percept(self, mansion):
+        self.__mansionView = copy.deepcopy(mansion)
+
+    def chooseActionBFS(self, problem):
+        mansionInitialState = State(self.__mansionView, self)
+        initialNode = Node(mansionInitialState, None, None, 0, 0)
+        fringe = [initialNode]
+        visitedStates = []
+
+        while len(fringe) > 0:
+            node = fringe.pop(0)
+            visitedStates.append(node.getState())
+            if problem.goalTest(node.getState()):
+                return node
+
+            successors = problem.expand(node)
+            for s in successors:
+                if s.getState() not in visitedStates:
+                    fringe.append(s)
+        return None
+
+    def chooseActionDFS(self, problem):
+        mansionInitialState = State(self.__mansionView, self)
+        initialNode = Node(mansionInitialState, None, None, 0, 0)
+        fringe = [initialNode]
+        visitedStates = []
+
+        while len(fringe) > 0:
+            node = fringe.pop(0)
+            visitedStates.append(node.getState())
+            if problem.goalTest(node.getState()):
+                return node
+
+            successors = problem.expand(node)
+            for s in successors:
+                if s.getState() not in visitedStates:
+                    fringe.insert(0, s)
+        return None
 
     def makeAction(self):
         print("make action")

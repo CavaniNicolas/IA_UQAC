@@ -7,130 +7,94 @@ from problem import Problem
 from state import State
 from mansion import Mansion
 
-def treeSearchBFS(problem, initialNode):
-    fringe = [initialNode]
-    visitedStates = []
-    while len(fringe) > 0:
-        node = fringe.pop(0)
-        visitedStates.append(node.getState())
-        if problem.goalTest(node.getState()):
-            return node
+import threading
+import time
 
-        successors = problem.expand(node)
-        for s in successors:
-            if s.getState() not in visitedStates:
-                fringe.append(s)
-
-    return None
-
-def treeSearchDFS(problem, initialNode):
-    fringe = [initialNode]
-    visitedStates = []
-    while len(fringe) > 0:
-        node = fringe.pop(0)
-        visitedStates.append(node.getState())
-        if problem.goalTest(node.getState()):
-            return node
-
-        successors = problem.expand(node)
-        for s in successors:
-            if s.getState() not in visitedStates:
-                fringe.insert(0, s)
-
-    return None
 
 # returns True if the mansion is clean
 def tp1GoalTest(state):
     return [0, 0] == state.getMansion().getDirtAndJewelsLeft()
 
-
 # returns the successor states of "state" from the tree
 def tp1SuccessorFn(state):
     successors = []
 
-    mansionSize = state.getMansion().getMansionSize()
     mansionCpy = copy.deepcopy(state.getMansion())
-
-    # print(copy.deepcopy(state.getMansionState()))
     roomsCpy = copy.deepcopy(state.getMansionState())
     robotCpy = copy.deepcopy(state.getRobot())
-    robot_I = robotCpy.getI()
-    robot_J = robotCpy.getJ()
+
+    mansionSize = mansionCpy.getMansionSize()
+    robotI = robotCpy.getI()
+    robotJ = robotCpy.getJ()
 
     # pickup jewel
-    if roomsCpy[robot_I][robot_J].getState() >= 2:
-        mansionCpy.pickupJewelInRoom(robot_I, robot_J)
+    if roomsCpy[robotI][robotJ].getState() >= 2:
+        mansionCpy.pickupJewelInRoom(robotI, robotJ)
         successors.append(State(mansionCpy, robotCpy))
 
     # clean dirt
-    elif roomsCpy[robot_I][robot_J].getState() == 1:
-        mansionCpy.cleanRoom(robot_I, robot_J)
+    elif roomsCpy[robotI][robotJ].getState() == 1:
+        mansionCpy.cleanRoom(robotI, robotJ)
         successors.append(State(mansionCpy, robotCpy))
 
     # successors with movement action
-    else :
+    else:
         # go up
-        if robot_I > 0 and robotCpy.hasRoomBeenVisited(robot_I - 1, robot_J) < robotCpy.getMaxVisitsPerRoom():
+        if robotI > 0 and robotCpy.hasRoomBeenVisited(robotI - 1, robotJ) < robotCpy.getMaxVisitsPerRoom():
             robotCpy = copy.deepcopy(state.getRobot())
-            robotCpy.visitRoom(robot_I, robot_J)
-            robotCpy.setPosition(robot_I - 1, robot_J)
+            robotCpy.visitRoom(robotI, robotJ)
+            robotCpy.setPosition(robotI - 1, robotJ)
             successors.append(State(state.getMansion(), robotCpy))
 
         # go down
-        if robot_I < mansionSize - 1 and robotCpy.hasRoomBeenVisited(robot_I + 1, robot_J) < robotCpy.getMaxVisitsPerRoom():
+        if robotI < mansionSize - 1 and robotCpy.hasRoomBeenVisited(robotI + 1, robotJ) < robotCpy.getMaxVisitsPerRoom():
             robotCpy = copy.deepcopy(state.getRobot())
-            robotCpy.visitRoom(robot_I, robot_J)
-            robotCpy.setPosition(robot_I + 1, robot_J)
+            robotCpy.visitRoom(robotI, robotJ)
+            robotCpy.setPosition(robotI + 1, robotJ)
             successors.append(State(state.getMansion(), robotCpy))
 
         # go left
-        if robot_J > 0 and robotCpy.hasRoomBeenVisited(robot_I, robot_J - 1) < robotCpy.getMaxVisitsPerRoom():
+        if robotJ > 0 and robotCpy.hasRoomBeenVisited(robotI, robotJ - 1) < robotCpy.getMaxVisitsPerRoom():
             robotCpy = copy.deepcopy(state.getRobot())
-            robotCpy.visitRoom(robot_I, robot_J)
-            robotCpy.setPosition(robot_I, robot_J - 1)
+            robotCpy.visitRoom(robotI, robotJ)
+            robotCpy.setPosition(robotI, robotJ - 1)
             successors.append(State(state.getMansion(), robotCpy))
 
         # go right
-        if robot_J < mansionSize - 1 and robotCpy.hasRoomBeenVisited(robot_I, robot_J + 1) < robotCpy.getMaxVisitsPerRoom():
+        if robotJ < mansionSize - 1 and robotCpy.hasRoomBeenVisited(robotI, robotJ + 1) < robotCpy.getMaxVisitsPerRoom():
             robotCpy = copy.deepcopy(state.getRobot())
-            robotCpy.visitRoom(robot_I, robot_J)
-            robotCpy.setPosition(robot_I, robot_J + 1)
+            robotCpy.visitRoom(robotI, robotJ)
+            robotCpy.setPosition(robotI, robotJ + 1)
             successors.append(State(state.getMansion(), robotCpy))
 
     return successors
 
 
+robotIsAlive = True
+
+
+def robotThreadFn(robot, mansion, problem):
+    while robotIsAlive:
+        robot.percept(mansion)
+        robot.chooseActionDFS(problem)
+        robot.makeAction()
+        time.sleep(1)
+
+
 if __name__ == "__main__":
 
-    # rooms_1 = [[0,1,0], [0,0,0], [0,0,0]]
-
+    # variables initialization
     problem = Problem(tp1GoalTest, tp1SuccessorFn)
     mansion = Mansion(5)
     robot = Robot(0, 0, mansion)
-    mansionInitialState = State(mansion, robot)
 
-    # print(mansionInitialState)
+    # start the robot thread
+    robotThread = threading.Thread(target=robotThreadFn, args=[robot, mansion, problem])
+    robotThread.start()
 
-    initialNode = Node(mansionInitialState, None, None, 0, 0)
+    # start the mansion thread
+    # TODO
 
-    print()
-
-    print("Initial node = ")
-    print(initialNode)
-
-    print()
-
-    print("Goal test :", problem.goalTest(initialNode.getState()))
-
-    print()
-
-    endNode = treeSearchDFS(problem, initialNode)
-    nodePath = []
-    while endNode != None:
-        nodePath.insert(0, endNode)
-        endNode = endNode.getParentNode()
-
-    print("Tree search = ")
-    for n in nodePath:
-        print(n)
-        print()
+    # wait for user input to exit the application
+    input()
+    robotIsAlive = False
