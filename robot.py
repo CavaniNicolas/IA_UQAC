@@ -73,7 +73,7 @@ class Robot:
             if problem.goalTest(node.getState()):
                 return node
 
-            successors = problem.expand(node)
+            successors = node.expand(problem)
             for s in successors:
                 if s.getState() not in visitedStates:
                     fringe.append(s)
@@ -91,7 +91,7 @@ class Robot:
             if problem.goalTest(node.getState()):
                 return node
 
-            successors = problem.expand(node)
+            successors = node.expand(problem)
             for s in successors:
                 if s.getState() not in visitedStates:
                     fringe.insert(0, s)

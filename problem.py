@@ -10,11 +10,3 @@ class Problem:
 
     def successorFn(self, state):
         return self.__successorFn(state)
-
-    def expand(self, node):
-        successors = []
-        # TODO: add actions
-        result = self.successorFn(node.getState())
-        for r in result:
-            successors.append(Node(r, node, None, node.getDepth() + 1, node.getPathCost() + 1))
-        return successors

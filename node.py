@@ -22,3 +22,11 @@ class Node:
 
     def getPathCost(self):
         return self.__pathCost
+
+    def expand(self, problem):
+        successors = []
+        # TODO: add actions
+        result = problem.successorFn(self.__state)
+        for r in result:
+            successors.append(Node(r, self, None, self.__depth + 1, self.__pathCost + 1))
+        return successors
