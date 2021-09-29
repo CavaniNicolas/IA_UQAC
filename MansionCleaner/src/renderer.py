@@ -41,7 +41,7 @@ class Renderer:
                     self.__drawSquare("purple")
                 turtle.forward(self.__squareSize)
 
-        # __drawRobot(state.getRobot())
+        self.__drawRobot(startX, startY, state.getRobot())
 
         turtle.update()
 
@@ -53,5 +53,16 @@ class Renderer:
         for i in range(4):
             turtle.forward(self.__squareSize)
             turtle.left(90)
+        turtle.up()
+        turtle.end_fill()
+
+    def __drawRobot(self, startX, startY, robot):
+        robotI, robotJ = robot.getPosition()
+        turtle.goto(startY + robotJ * self.__squareSize + self.__squareSize / 2, startX - robotI * self.__squareSize + self.__squareSize / 4)
+        turtle.pencolor("black")
+        turtle.fillcolor("black")
+        turtle.begin_fill()
+        turtle.down()
+        turtle.circle(self.__squareSize / 4)
         turtle.up()
         turtle.end_fill()
