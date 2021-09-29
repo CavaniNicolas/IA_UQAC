@@ -6,6 +6,7 @@ from robot import Robot
 from problem import Problem
 from state import State
 from mansion import Mansion
+from renderer import Renderer
 
 def treeSearchBFS(problem, initialNode):
     fringe = [initialNode]
@@ -111,6 +112,8 @@ if __name__ == "__main__":
 
     # print(mansionInitialState)
 
+    renderer = Renderer()
+
     initialNode = Node(mansionInitialState, None, None, 0, 0)
 
     print()
@@ -132,5 +135,6 @@ if __name__ == "__main__":
 
     print("Tree search = ")
     for n in nodePath:
+        renderer.drawState(n.getState())
         print(n)
         print()
