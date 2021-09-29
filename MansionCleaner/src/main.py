@@ -128,10 +128,12 @@ if __name__ == "__main__":
 
     # start the mansion thread
     mansionThread = threading.Thread(target=mansionThreadFn, args=[mansion, robot])
+    mansionThread.daemon = True
     mansionThread.start()
 
     # start the robot thread
     robotThread = threading.Thread(target=robotThreadFn, args=[robot, mansion, problem])
+    robotThread.daemon = True
     robotThread.start()
 
     while isRunning:
