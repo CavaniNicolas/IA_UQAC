@@ -99,6 +99,33 @@ class Robot:
                     fringe.insert(0, s)
         return None
 
+    def chooseActionGreedySearch(self, problem, heuristic):
+        mansionInitialState = State(self.__mansionView, self)
+        initialNode = Node(mansionInitialState, None, None, 0, 0)
+        fringe = [initialNode]
+        visitedStates = []
+
+        while len(fringe) > 0:
+            # select the node with the lowest heuristic value
+            minValue = 100000000000
+            indexMinValue = 0
+            for i in range(len(fringe)):
+                tmpValue = heuristic(fringe[i].getState())
+                if tmpValue < minValue:
+                    minValue = tmpValue
+                    indexMinValue = i
+            node = fringe.pop(indexMinValue)
+
+            visitedStates.append(node.getState())
+            if problem.goalTest(node.getState()):
+                return node
+
+            successors = node.expand(problem)
+            for s in successors:
+                if s.getState() not in visitedStates:
+                    fringe.append(s)
+        return None
+
     def makeAction(self, seq, mansion):
         for action in seq:
             if action == Action.CLEAN:

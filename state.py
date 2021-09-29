@@ -31,3 +31,6 @@ class State:
 
     def __eq__(self, other):
         return self.getMansionState() == other.getMansionState() and self.getRobotPosition() == other.getRobotPosition()
+
+    def getNbDirtAndJewels(self):
+        return self.__mansion.getDirtAndJewelsLeft()

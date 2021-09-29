@@ -11,6 +11,14 @@ import threading
 import time
 
 
+# heuristic value : sum of remaining number of dirt and jewels
+def heuristicRemainingDirtAndJewels(state):
+
+    nbDirt, nbJewels = state.getNbDirtAndJewels()
+
+    return nbDirt + nbJewels
+
+
 # returns True if the mansion is clean
 def tp1GoalTest(state):
     return [0, 0] == state.getMansion().getDirtAndJewelsLeft()
@@ -76,7 +84,7 @@ isRunning = True
 def robotThreadFn(robot, mansion, problem):
     while isRunning:
         robot.percept(mansion)
-        endNode = robot.chooseActionDFS(problem)
+        endNode = robot.chooseActionGreedySearch(problem, heuristicRemainingDirtAndJewels)
         # create sequence of actions
         seq = []
         while endNode is not None:
