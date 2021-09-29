@@ -6,9 +6,7 @@ class Renderer:
     __squareSize = 75
 
     def __init__(self, onClose):
-        turtle.tracer(20)
-        turtle.pencolor("")  #Pas de couleur pour éviter les traits de construction
-        # turtle.speed(0)  #Vitesse de crayon rapide, no need if there is turtle.tracer(5)
+        turtle.pencolor("")  # No color to avoid construction lines
 
         # add event listener when window is closed
         windows = turtle.Screen()
@@ -19,11 +17,15 @@ class Renderer:
     def drawState(self, state):
         turtle.clearscreen()
         turtle.pencolor("")
-        turtle.tracer(16)
         mansionSize = state.getMansion().getMansionSize()
 
         startX = int(mansionSize / 2) * self.__squareSize
         startY = -int(mansionSize / 2) * self.__squareSize
+
+        turtle.speed(0)
+        turtle.delay(0)
+        turtle.ht()
+        turtle.tracer(0, 0)
 
         for i in range(mansionSize):
             for j in range(mansionSize):
@@ -40,6 +42,8 @@ class Renderer:
                 turtle.forward(self.__squareSize)
 
         # __drawRobot(state.getRobot())
+
+        turtle.update()
 
     def __drawSquare(self, color):
         turtle.pencolor("black")
