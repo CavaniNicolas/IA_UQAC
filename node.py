@@ -17,6 +17,9 @@ class Node:
     def getParentNode(self):
         return self.__parentNode
 
+    def getOperator(self):
+        return self.__operator
+
     def getDepth(self):
         return self.__depth
 
@@ -25,8 +28,9 @@ class Node:
 
     def expand(self, problem):
         successors = []
-        # TODO: add actions
-        result = problem.successorFn(self.__state)
-        for r in result:
-            successors.append(Node(r, self, None, self.__depth + 1, self.__pathCost + 1))
+
+        results = problem.successorFn(self.__state)
+        for resultState, resultAction in results:
+            successors.append(Node(resultState, self, resultAction, self.__depth + 1, self.__pathCost + 1))
+
         return successors

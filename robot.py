@@ -1,8 +1,10 @@
 import copy
 import random
+import time
 
 from node import Node
 from state import State
+from action import Action
 
 class Robot:
     def __init__(self, i, j, mansion=None):
@@ -97,8 +99,22 @@ class Robot:
                     fringe.insert(0, s)
         return None
 
-    def makeAction(self):
-        print("make action")
+    def makeAction(self, seq, mansion):
+        for action in seq:
+            if action == Action.CLEAN:
+                mansion.cleanRoom(self.__i, self.__j)
+            elif action == Action.PICKUP:
+                mansion.pickupJewelInRoom(self.__i, self.__j)
+            elif action == Action.MOVE_UP:
+                self.__i -= 1
+            elif action == Action.MOVE_LEFT:
+                self.__j -= 1
+            elif action == Action.MOVE_DOWN:
+                self.__i += 1
+            elif action == Action.MOVE_RIGHT:
+                self.__j += 1
+
+            time.sleep(1)
 
     def goToRoom(self, i, j):
         if (self.__i == i and self.__j == j):
