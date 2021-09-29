@@ -84,6 +84,7 @@ isRunning = True
 
 
 def robotThreadFn(robot, mansion, problem):
+    global isRunning
     while isRunning:
         robot.percept(mansion)
         endNode = robot.chooseActionGreedySearch(problem, heuristicRemainingDirtAndJewels)
@@ -97,6 +98,7 @@ def robotThreadFn(robot, mansion, problem):
 
 
 def mansionThreadFn(mansion, robot):
+    global isRunning
     while isRunning:
         # TODO: generate dirt and jewel
         rooms = mansion.getRooms()
@@ -111,13 +113,18 @@ def mansionThreadFn(mansion, robot):
         time.sleep(1)
 
 
+def onRenderClose():
+    global isRunning
+    isRunning = False
+
+
 if __name__ == "__main__":
 
     # variables initialization
     problem = Problem(tp1GoalTest, tp1SuccessorFn)
     mansion = Mansion(5)
     robot = Robot(0, 0, mansion)
-    renderer = Renderer()
+    renderer = Renderer(onRenderClose)
 
     # start the mansion thread
     mansionThread = threading.Thread(target=mansionThreadFn, args=[mansion, robot])
@@ -127,27 +134,7 @@ if __name__ == "__main__":
     robotThread = threading.Thread(target=robotThreadFn, args=[robot, mansion, problem])
     robotThread.start()
 
-    # start the mansion thread
-    # TODO
-
-    prevTime = time.time()
-    currTime = 0
-
-    i = 0
-
-    print("Tree search = ")
-    while (i < len(nodePath)):
-        currTime = time.time()
-        if (currTime - prevTime > 0.4):
-            n = nodePath[i]
-
-            renderer.drawState(n.getState())
-            print(n)
-            print()
-
-            prevTime = currTime
-            i += 1
-
-    # wait for user input to exit the application
-    input()
-    isRunning = False
+    while isRunning:
+        currentState = State(mansion, robot)
+        renderer.drawState(currentState)
+        time.sleep(0.5)

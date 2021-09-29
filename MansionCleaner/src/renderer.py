@@ -5,10 +5,16 @@ from state import State
 class Renderer:
     __squareSize = 75
 
-    def __init__(self):
+    def __init__(self, onClose):
         turtle.tracer(20)
         turtle.pencolor("")  #Pas de couleur pour éviter les traits de construction
         # turtle.speed(0)  #Vitesse de crayon rapide, no need if there is turtle.tracer(5)
+
+        # add event listener when window is closed
+        windows = turtle.Screen()
+        canvas = windows.getcanvas()
+        root = canvas.winfo_toplevel()
+        root.protocol("WM_DELETE_WINDOW", onClose)
 
     def drawState(self, state):
         turtle.clearscreen()
