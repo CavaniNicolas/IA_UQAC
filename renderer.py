@@ -11,7 +11,9 @@ class Renderer:
         # turtle.speed(0)  #Vitesse de crayon rapide, no need if there is turtle.tracer(5)
 
     def drawState(self, state):
-
+        turtle.clearscreen()
+        turtle.pencolor("")
+        turtle.tracer(16)
         mansionSize = state.getMansion().getMansionSize()
 
         startX = int(mansionSize / 2) * self.__squareSize

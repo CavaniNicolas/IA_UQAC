@@ -1,5 +1,6 @@
 import random
 import copy
+import time
 
 from node import Node
 from robot import Robot
@@ -133,8 +134,21 @@ if __name__ == "__main__":
         nodePath.insert(0, endNode)
         endNode = endNode.getParentNode()
 
+
+    prevTime = time.time()
+    currTime = 0
+
+    i = 0
+
     print("Tree search = ")
-    for n in nodePath:
-        renderer.drawState(n.getState())
-        print(n)
-        print()
+    while (i < len(nodePath)):
+        currTime = time.time()
+        if (currTime - prevTime > 0.4):
+            n = nodePath[i]
+
+            renderer.drawState(n.getState())
+            print(n)
+            print()
+
+            prevTime = currTime
+            i += 1
