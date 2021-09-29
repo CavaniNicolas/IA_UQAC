@@ -1,11 +1,13 @@
 import random
 import copy
+import time
 
 from action import Action
 from robot import Robot
 from problem import Problem
 from state import State
 from mansion import Mansion
+from renderer import Renderer
 
 import threading
 import time
@@ -115,6 +117,7 @@ if __name__ == "__main__":
     problem = Problem(tp1GoalTest, tp1SuccessorFn)
     mansion = Mansion(5)
     robot = Robot(0, 0, mansion)
+    renderer = Renderer()
 
     # start the mansion thread
     mansionThread = threading.Thread(target=mansionThreadFn, args=[mansion, robot])
@@ -126,6 +129,24 @@ if __name__ == "__main__":
 
     # start the mansion thread
     # TODO
+
+    prevTime = time.time()
+    currTime = 0
+
+    i = 0
+
+    print("Tree search = ")
+    while (i < len(nodePath)):
+        currTime = time.time()
+        if (currTime - prevTime > 0.4):
+            n = nodePath[i]
+
+            renderer.drawState(n.getState())
+            print(n)
+            print()
+
+            prevTime = currTime
+            i += 1
 
     # wait for user input to exit the application
     input()
