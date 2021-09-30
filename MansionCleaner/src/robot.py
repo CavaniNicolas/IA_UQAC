@@ -17,6 +17,7 @@ class Robot:
         self.__visitedRooms = [[0 for j in range(mansion.getMansionSize())] for i in range(mansion.getMansionSize())]
         self.__maxVisitsPerRoom = 1
         self.__isChoosingAction = False
+        self.actionSequence = []
 
     def getEnergyUsed(self):
         return self.__energyUsed
@@ -64,6 +65,13 @@ class Robot:
     def getIsChoosingAction(self):
         return self.__isChoosingAction
 
+    def createActionSequence(self, endNode):
+        # create the sequence of actions by browsing the nodes of the solution
+        self.__actionSequence = []
+        while endNode is not None:
+            self.__actionSequence.insert(0, endNode.getOperator())
+            endNode = endNode.getParentNode()
+
     def percept(self, mansion):
         self.__mansionView = copy.deepcopy(mansion)
 
@@ -77,6 +85,7 @@ class Robot:
             node = fringe.pop(0)
             visitedStates.append(node.getState())
             if problem.goalTest(node.getState()):
+                self.createActionSequence(node)
                 return node
 
             successors = node.expand(problem)
@@ -95,6 +104,7 @@ class Robot:
             node = fringe.pop(0)
             visitedStates.append(node.getState())
             if problem.goalTest(node.getState()):
+                self.createActionSequence(node)
                 return node
 
             successors = node.expand(problem)
@@ -124,6 +134,7 @@ class Robot:
             visitedStates.append(node.getState())
             if problem.goalTest(node.getState()):
                 self.__isChoosingAction = False
+                self.createActionSequence(node)
                 return node
 
             successors = node.expand(problem)
@@ -133,8 +144,8 @@ class Robot:
         self.__isChoosingAction = False
         return None
 
-    def makeAction(self, seq, mansion):
-        for action in seq:
+    def makeAction(self, mansion):
+        for action in self.__actionSequence:
             if action == Action.CLEAN:
                 mansion.cleanRoom(self.__i, self.__j)
             elif action == Action.PICKUP:

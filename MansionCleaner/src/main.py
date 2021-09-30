@@ -87,13 +87,8 @@ def robotThreadFn(robot, mansion, problem):
     global isRunning
     while isRunning:
         robot.percept(mansion)
-        endNode = robot.chooseActionGreedySearch(problem, heuristicRemainingDirtAndJewels)
-        # create sequence of actions
-        seq = []
-        while endNode is not None:
-            seq.insert(0, endNode.getOperator())
-            endNode = endNode.getParentNode()
-        robot.makeAction(seq, mansion)
+        robot.chooseActionGreedySearch(problem, heuristicRemainingDirtAndJewels)
+        robot.makeAction(mansion)
         time.sleep(1)
 
 
