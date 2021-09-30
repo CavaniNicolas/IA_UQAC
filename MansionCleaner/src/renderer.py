@@ -15,7 +15,6 @@ class Renderer:
         root.protocol("WM_DELETE_WINDOW", onClose)
 
     def drawState(self, state):
-        turtle.clearscreen()
         turtle.pencolor("")
         mansionSize = state.getMansion().getMansionSize()
 
