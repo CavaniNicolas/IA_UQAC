@@ -139,4 +139,4 @@ if __name__ == "__main__":
     while isRunning:
         currentState = State(mansion, robot)
         renderer.drawState(currentState)
-        time.sleep(0.5)
+        time.sleep(0.2)
