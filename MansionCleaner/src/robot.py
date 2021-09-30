@@ -17,7 +17,7 @@ class Robot:
         self.__visitedRooms = [[0 for j in range(mansion.getMansionSize())] for i in range(mansion.getMansionSize())]
         self.__maxVisitsPerRoom = 1
         self.__isChoosingAction = False
-        self.actionSequence = []
+        self.__actionSequence = []
 
     def getEnergyUsed(self):
         return self.__energyUsed
