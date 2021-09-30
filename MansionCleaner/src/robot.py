@@ -76,6 +76,7 @@ class Robot:
         self.__mansionView = copy.deepcopy(mansion)
 
     def chooseActionBFS(self, problem):
+        self.__isChoosingAction = True
         mansionInitialState = State(self.__mansionView, self)
         initialNode = Node(mansionInitialState, None, None, 0, 0)
         fringe = [initialNode]
@@ -85,6 +86,7 @@ class Robot:
             node = fringe.pop(0)
             visitedStates.append(node.getState())
             if problem.goalTest(node.getState()):
+                self.__isChoosingAction = False
                 self.createActionSequence(node)
                 return node
 
@@ -92,9 +94,11 @@ class Robot:
             for s in successors:
                 if s.getState() not in visitedStates:
                     fringe.append(s)
+        self.__isChoosingAction = False
         return None
 
     def chooseActionDFS(self, problem):
+        self.__isChoosingAction = True
         mansionInitialState = State(self.__mansionView, self)
         initialNode = Node(mansionInitialState, None, None, 0, 0)
         fringe = [initialNode]
@@ -104,6 +108,7 @@ class Robot:
             node = fringe.pop(0)
             visitedStates.append(node.getState())
             if problem.goalTest(node.getState()):
+                self.__isChoosingAction = False
                 self.createActionSequence(node)
                 return node
 
@@ -111,6 +116,7 @@ class Robot:
             for s in successors:
                 if s.getState() not in visitedStates:
                     fringe.insert(0, s)
+        self.__isChoosingAction = False
         return None
 
     def chooseActionGreedySearch(self, problem, heuristic):
