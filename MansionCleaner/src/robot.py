@@ -147,9 +147,14 @@ class Robot:
     def makeAction(self, mansion):
         for action in self.__actionSequence:
             if action == Action.CLEAN:
-                mansion.cleanRoom(self.__i, self.__j)
+                jewelSucked = mansion.cleanRoom(self.__i, self.__j)
+                if jewelSucked:
+                    self.__performanceMeasure -= 6
+                else:
+                    self.__performanceMeasure += 2
             elif action == Action.PICKUP:
                 mansion.pickupJewelInRoom(self.__i, self.__j)
+                self.__performanceMeasure += 2
             elif action == Action.MOVE_UP:
                 self.__i -= 1
             elif action == Action.MOVE_LEFT:

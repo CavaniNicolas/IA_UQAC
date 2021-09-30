@@ -35,17 +35,22 @@ class Mansion:
         return [self.__nbOfDirt, self.__nbOfJewels]
 
     def cleanRoom(self, i, j):
+        jewelSucked = False
+
         if (self.__rooms[i][j].getState() == 1):
             self.__nbOfDirt -= 1
 
         elif (self.__rooms[i][j].getState() == 2):
             self.__nbOfJewels -= 1
+            jewelSucked = True
 
         elif (self.__rooms[i][j].getState() == 3):
             self.__nbOfDirt -= 1
             self.__nbOfJewels -= 1
+            jewelSucked = True
 
         self.__rooms[i][j].clean()
+        return jewelSucked
 
     def pickupJewelInRoom(self, i, j):
         if (self.__rooms[i][j].getState() >= 2):
