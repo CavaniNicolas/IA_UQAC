@@ -40,7 +40,7 @@ class Renderer:
                     self.__drawSquare("purple")
                 turtle.forward(self.__squareSize)
 
-        self.__drawRobot(startX, startY, state.getRobot())
+        self.__drawRobot(mansionSize, state.getRobot())
 
         self.__drawColorsCaptions(mansionSize)
 
@@ -57,8 +57,11 @@ class Renderer:
         turtle.up()
         turtle.end_fill()
 
-    def __drawRobot(self, startX, startY, robot):
+    def __drawRobot(self, mansionSize, robot):
         robotI, robotJ = robot.getPosition()
+        startX = int(mansionSize / 2) * self.__squareSize
+        startY = -int(mansionSize / 2) * self.__squareSize
+
         turtle.goto(startY + robotJ * self.__squareSize + self.__squareSize / 2, startX - robotI * self.__squareSize + self.__squareSize / 4)
         turtle.pencolor("black")
         if robot.getIsChoosingAction():
