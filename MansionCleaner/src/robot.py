@@ -159,6 +159,8 @@ class Robot:
             elif action == Action.MOVE_RIGHT:
                 self.__j += 1
 
+            self.__energyUsed += 1
+
             time.sleep(1)
 
     def goToRoom(self, i, j):
