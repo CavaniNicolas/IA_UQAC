@@ -16,6 +16,7 @@ class Robot:
         # remember the number of times the robot went through those rooms
         self.__visitedRooms = [[0 for j in range(mansion.getMansionSize())] for i in range(mansion.getMansionSize())]
         self.__maxVisitsPerRoom = 1
+        self.__isChoosingAction = False
 
     def getEnergyUsed(self):
         return self.__energyUsed
@@ -60,6 +61,9 @@ class Robot:
     def getMansionView(self):
         return self.__mansionView
 
+    def getIsChoosingAction(self):
+        return self.__isChoosingAction
+
     def percept(self, mansion):
         self.__mansionView = copy.deepcopy(mansion)
 
@@ -100,6 +104,7 @@ class Robot:
         return None
 
     def chooseActionGreedySearch(self, problem, heuristic):
+        self.__isChoosingAction = True
         mansionInitialState = State(self.__mansionView, self)
         initialNode = Node(mansionInitialState, None, None, 0, 0)
         fringe = [initialNode]
@@ -118,12 +123,14 @@ class Robot:
 
             visitedStates.append(node.getState())
             if problem.goalTest(node.getState()):
+                self.__isChoosingAction = False
                 return node
 
             successors = node.expand(problem)
             for s in successors:
                 if s.getState() not in visitedStates:
                     fringe.append(s)
+        self.__isChoosingAction = False
         return None
 
     def makeAction(self, seq, mansion):

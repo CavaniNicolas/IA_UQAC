@@ -59,7 +59,10 @@ class Renderer:
         robotI, robotJ = robot.getPosition()
         turtle.goto(startY + robotJ * self.__squareSize + self.__squareSize / 2, startX - robotI * self.__squareSize + self.__squareSize / 4)
         turtle.pencolor("black")
-        turtle.fillcolor("black")
+        if robot.getIsChoosingAction():
+            turtle.fillcolor("green")
+        else:
+            turtle.fillcolor("black")
         turtle.begin_fill()
         turtle.down()
         turtle.circle(self.__squareSize / 4)
