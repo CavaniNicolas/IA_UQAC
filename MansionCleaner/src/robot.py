@@ -173,12 +173,3 @@ class Robot:
             self.__energyUsed += 1
 
             time.sleep(1)
-
-    def goToRoom(self, i, j):
-        if (self.__i == i and self.__j == j):
-            return True
-        else:
-            if (self.__i != i):
-                self.setI(self.__i + (i - self.__i) / abs(i - self.__i))
-            else:
-                self.setJ(self.__j + (j - self.__j) / abs(j - self.__j))
