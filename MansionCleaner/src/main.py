@@ -83,11 +83,18 @@ def tp1SuccessorFn(state):
 isRunning = True
 
 
-def robotThreadFn(robot, mansion, problem):
+def robotThreadFn(robot, mansion, problem, algorithm):
     global isRunning
     while isRunning:
         robot.percept(mansion)
-        robot.chooseActionGreedySearch(problem, heuristicRemainingDirtAndJewels)
+        if algorithm == "BFS":
+            robot.chooseActionBFS(problem)
+            pass
+        elif algorithm == "DFS":
+            robot.chooseActionDFS(problem)
+            pass
+        elif algorithm == "Greedy":
+            robot.chooseActionGreedySearch(problem, heuristicRemainingDirtAndJewels)
         robot.makeAction(mansion)
         time.sleep(1)
 
@@ -113,7 +120,48 @@ def onRenderClose():
     isRunning = False
 
 
+def chooseSearchAlgorithm():
+    explorationType = 0
+    while (explorationType < 1 or explorationType > 2):
+        print("Quel type d'exploration choisissez-vous ? :")
+        print("(1) Exploration non-informée")
+        print("(2) Exploration informée")
+
+        try:
+            explorationType = int(input())
+            if (explorationType < 1 or explorationType > 2):
+                print("\nVeuillez saisir un entier entre 1 et 2\n")
+        except ValueError:
+            print("\nVeuillez saisir un nombre entier !\n")
+
+    algorithm = 0
+    if (explorationType == 1):
+        # uninformed exploration
+        while (algorithm < 1 or algorithm > 2):
+            print("Quel algorithme choisissez-vous ? :")
+            print("(1) Bread-First Search (Attention : cet algorithme peut être très long)")
+            print("(2) Depth-First Search")
+
+            try:
+                algorithm = int(input())
+                if (algorithm < 1 or algorithm > 2):
+                    print("\nVeuillez saisir un entier entre 1 et 2\n")
+                else:
+                    if algorithm == 1:
+                        return "BFS"
+                    else:
+                        return "DFS"
+            except ValueError:
+                print("\nVeuillez saisir un nombre entier !\n")
+    else:
+        # informed exploration
+        print("L'algorithme utilisé est : Greedy Search")
+        return "Greedy"
+
 if __name__ == "__main__":
+
+    # let the user choose the exploration algorithm at the beginning
+    algorithm = chooseSearchAlgorithm()
 
     # variables initialization
     problem = Problem(tp1GoalTest, tp1SuccessorFn)
@@ -127,7 +175,7 @@ if __name__ == "__main__":
     mansionThread.start()
 
     # start the robot thread
-    robotThread = threading.Thread(target=robotThreadFn, args=[robot, mansion, problem])
+    robotThread = threading.Thread(target=robotThreadFn, args=[robot, mansion, problem, algorithm])
     robotThread.daemon = True
     robotThread.start()
 
