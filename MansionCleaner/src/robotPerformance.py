@@ -57,10 +57,12 @@ class RobotPerformance:
     def getNbJewelPickedUp(self):
         return self.__nbJewelPickedUp
 
+    def incrementCountPerformanceUpdates(self):
+        self.__countPerformanceUpdates += 1
+
     def setCurrentPerformance(self, performance):
         self.__currentPerformance = performance
         self.__sumAllPerformances += performance
-        self.__countPerformanceUpdates += 1
         self.__finalPerformance = self.__sumAllPerformances / self.__countPerformanceUpdates
 
     def getFinalPerformance(self):
@@ -82,3 +84,6 @@ class RobotPerformance:
 
     def getDifferenceSumHeuristicValues(self):
         return self.__differenceSumHeuristicValues
+
+    def getMeanDifferenceHeuristicValues(self):
+        return self.__differenceSumHeuristicValues / self.__countPerformanceUpdates

@@ -4,7 +4,7 @@ import random
 from room import Room
 
 class Mansion:
-    def __init__(self, mansionSize, rooms = None, probaDirt = 2, probaJewel = 1):
+    def __init__(self, mansionSize, rooms = None, probaDirt = 1, probaJewel = 0.4):
         self.__mansionSize = mansionSize
         self.__nbOfDirt = 0
         self.__nbOfJewels = 0
@@ -55,20 +55,22 @@ class Mansion:
 
         self.__rooms[i][j].pickupJewel()
 
-    def generateRandomDirt(self, n=2):
+    def generateRandomDirt(self, n=1):
         for i in range(self.__mansionSize):
             for j in range(self.__mansionSize):
-                proba = random.randint(0, 100)  # Random value between 0 and 100
+                proba = random.randint(0, 10000)  # Random value between 0 and 100
+                proba /= 100
                 roomState = self.getRoomState(i, j)
                 if roomState != 1 and roomState != 3 and proba < n:
                     # There is no dirt in this room
                     self.__rooms[i][j].setHasDirt(True)
                     self.__nbOfDirt += 1
 
-    def generateRandomJewel(self, n=1):
+    def generateRandomJewel(self, n=0.4):
         for i in range(self.__mansionSize):
             for j in range(self.__mansionSize):
-                proba = random.randint(0, 100) # Random value between 0 and 100
+                proba = random.randint(0, 10000) # Random value between 0 and 100
+                proba /= 100
                 roomState = self.getRoomState(i, j)
                 if roomState != 2 and roomState != 3 and proba < n:
                     # There is no jewel in this room

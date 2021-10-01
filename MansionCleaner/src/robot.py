@@ -22,7 +22,7 @@ class Robot:
         self.__maxVisitsPerRoom = 1
         self.__isChoosingAction = False
         self.__actionSequence = []
-        self.__maxNbOfActions = 5
+        self.__maxNbOfActions = 20
 
     def getEnergyUsed(self):
         return self.__energyUsed
@@ -200,7 +200,7 @@ class Robot:
                 jewelSucked = mansion.cleanRoom(self.__i, self.__j)
                 self.__performance.addNbDirtCleaned()
                 if jewelSucked:
-                    self.__performance.addPenalty(6)
+                    self.__performance.addPenalty(8)
 
             elif action == Action.PICKUP:
                 mansion.pickupJewelInRoom(self.__i, self.__j)
@@ -243,16 +243,19 @@ class Robot:
 
         # determine the cleaningEfficiencyRatio (good when small)
         if nbDirtCleaned + nbJewelPickedUp == 0:
-            cleaningEfficiencyRatio = (self.__energyUsed / 0.5) + penalty
+            cleaningEfficiencyRatio = (self.__energyUsed / 1) + penalty
         else:
             cleaningEfficiencyRatio = (self.__energyUsed / (nbDirtCleaned + nbJewelPickedUp)) + penalty
 
+        # counts number of action the robot does (final performance gets updated for every action)
+        self.__performance.incrementCountPerformanceUpdates()
+
         # update performance
-        differenceSumHeuristicValues = self.__performance.getDifferenceSumHeuristicValues()
-        if differenceSumHeuristicValues + cleaningEfficiencyRatio == 0:
+        meanDifferenceHeuristicValues = self.__performance.getMeanDifferenceHeuristicValues()
+        if meanDifferenceHeuristicValues + cleaningEfficiencyRatio == 0:
             self.__performance.setCurrentPerformance(100 / 1)
         else:
-            self.__performance.setCurrentPerformance(100 / (differenceSumHeuristicValues + cleaningEfficiencyRatio))
+            self.__performance.setCurrentPerformance(100 / (5 * meanDifferenceHeuristicValues + cleaningEfficiencyRatio))
 
     def getFinalPerformance(self):
         return self.__performance.getFinalPerformance()
@@ -261,6 +264,7 @@ class Robot:
         return self.__performance.getCurrentPerformance()
 
     def resetPerformance(self):
+        self.__energyUsed = 0
         self.__performance.reset()
 
     def adaptMaxNbOfActions(self):
