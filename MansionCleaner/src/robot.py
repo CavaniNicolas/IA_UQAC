@@ -18,6 +18,7 @@ class Robot:
         self.__maxVisitsPerRoom = 1
         self.__isChoosingAction = False
         self.__actionSequence = []
+        self.__statesHeuristicValues = []
 
     def getEnergyUsed(self):
         return self.__energyUsed
@@ -72,8 +73,16 @@ class Robot:
             self.__actionSequence.insert(0, endNode.getOperator())
             endNode = endNode.getParentNode()
 
+    def createStatesHeuristicValues(self, heuristicFn, endNode):
+        self.__statesHeuristicValues = []
+        while endNode is not None:
+            value = heuristicFn(endNode.getState())
+            self.__statesHeuristicValues.insert(0, value)
+            endNode = endNode.getParentNode()
+
     # Sensor : Observe the "true" world and update internal state
     def percept(self, mansion):
+        self.__energyUsed += 1
         self.__mansionView = copy.deepcopy(mansion)
 
     def chooseActionBFS(self, problem):
@@ -120,7 +129,7 @@ class Robot:
         self.__isChoosingAction = False
         return None
 
-    def chooseActionGreedySearch(self, problem, heuristic):
+    def chooseActionGreedySearch(self, problem, heuristicFn):
         self.__isChoosingAction = True
         mansionInitialState = State(self.__mansionView, self)
         initialNode = Node(mansionInitialState, None, None, 0, 0)
@@ -132,7 +141,7 @@ class Robot:
             minValue = 100000000000
             indexMinValue = 0
             for i in range(len(fringe)):
-                tmpValue = heuristic(fringe[i].getState())
+                tmpValue = heuristicFn(fringe[i].getState())
                 if tmpValue < minValue:
                     minValue = tmpValue
                     indexMinValue = i
@@ -142,6 +151,7 @@ class Robot:
             if problem.goalTest(node.getState()):
                 self.__isChoosingAction = False
                 self.createActionSequence(node)
+                self.__statesHeuristicValues(heuristicFn, node)
                 return node
 
             successors = node.expand(problem)
@@ -151,7 +161,7 @@ class Robot:
         self.__isChoosingAction = False
         return None
 
-    def chooseActionAStar(self, problem, heuristic):
+    def chooseActionAStar(self, problem, heuristicFn):
         self.__isChoosingAction = True
         mansionInitialState = State(self.__mansionView, self)
         initialNode = Node(mansionInitialState, None, None, 0, 0)
@@ -163,7 +173,7 @@ class Robot:
             minValue = 100000000000
             indexMinValue = 0
             for i in range(len(fringe)):
-                tmpValue = heuristic(fringe[i].getState()) + fringe[i].getPathCost()
+                tmpValue = heuristicFn(fringe[i].getState()) + fringe[i].getPathCost()
                 if tmpValue < minValue:
                     minValue = tmpValue
                     indexMinValue = i
@@ -173,6 +183,7 @@ class Robot:
             if problem.goalTest(node.getState()):
                 self.__isChoosingAction = False
                 self.createActionSequence(node)
+                self.__statesHeuristicValues(heuristicFn, node)
                 return node
 
             successors = node.expand(problem)
@@ -183,17 +194,21 @@ class Robot:
         return None
 
     # Effector : make actions on the "true" world
-    def makeAction(self, mansion):
+    def makeAction(self, mansion, heuristicFn = None):
+        countAction = 0
+        countTEMPORARY = 0
+        maxCountTemporary = 5
+        sumEstimatedValues = 0
+        sumRealValues = 0
+        penalty = 0
+
         for action in self.__actionSequence:
             if action == Action.CLEAN:
                 jewelSucked = mansion.cleanRoom(self.__i, self.__j)
                 if jewelSucked:
-                    self.__performanceMeasure -= 6
-                else:
-                    self.__performanceMeasure += 2
+                    penalty += 6
             elif action == Action.PICKUP:
                 mansion.pickupJewelInRoom(self.__i, self.__j)
-                self.__performanceMeasure += 2
             elif action == Action.MOVE_UP:
                 self.__i -= 1
             elif action == Action.MOVE_LEFT:
@@ -204,5 +219,27 @@ class Robot:
                 self.__j += 1
 
             self.__energyUsed += 1
+            countAction += 1
+            countTEMPORARY += 1
+
+            if heuristicFn is not None:
+                realState = State(mansion, self)
+                realHeuristicValue = heuristicFn(realState)
+                estimatedHeuristicValue = self.__statesHeuristicValues[countAction]
+
+                sumEstimatedValues += estimatedHeuristicValue
+                sumRealValues += realHeuristicValue
+
+                if countTEMPORARY >= maxCountTemporary:
+                    countTEMPORARY = 0
+                    differenceHeuristicValue = sumEstimatedValues - sumRealValues
+
+                    self.__performanceMeasure = 100 / (differenceHeuristicValue + self.__energyUsed + penalty)
+
+                    if self.__performanceMeasure <= 50:
+                        return
+
+                    sumEstimatedValues = 0
+                    sumRealValues = 0
 
             time.sleep(1)
