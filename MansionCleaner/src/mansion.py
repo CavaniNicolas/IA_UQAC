@@ -4,7 +4,8 @@ import random
 from room import Room
 
 class Mansion:
-    def __init__(self, mansionSize, rooms = None, probaDirt = 1, probaJewel = 0.4):
+    # good values to test : probaDirt = 1 ; probaJewel = 0.4
+    def __init__(self, mansionSize, rooms = None, probaDirt = 10, probaJewel = 10):
         self.__mansionSize = mansionSize
         self.__nbOfDirt = 0
         self.__nbOfJewels = 0

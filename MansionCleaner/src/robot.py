@@ -58,12 +58,6 @@ class Robot:
     def visitRoom(self, i, j):
         self.__visitedRooms[i][j] += 1
 
-    def getPerformanceMeasure(self):
-        return self.__performanceMeasure
-
-    def setPerformanceMeasure(self, measure):
-        self.__performanceMeasure = measure
-
     def getMansionView(self):
         return self.__mansionView
 
@@ -200,7 +194,7 @@ class Robot:
                 jewelSucked = mansion.cleanRoom(self.__i, self.__j)
                 self.__performance.addNbDirtCleaned()
                 if jewelSucked:
-                    self.__performance.addPenalty(8)
+                    self.__performance.addPenalty(10)
 
             elif action == Action.PICKUP:
                 mansion.pickupJewelInRoom(self.__i, self.__j)
@@ -252,8 +246,8 @@ class Robot:
 
         # update performance
         meanDifferenceHeuristicValues = self.__performance.getMeanDifferenceHeuristicValues()
-        if meanDifferenceHeuristicValues + cleaningEfficiencyRatio == 0:
-            self.__performance.setCurrentPerformance(100 / 1)
+        if 5 * meanDifferenceHeuristicValues + cleaningEfficiencyRatio == 0:
+            self.__performance.setCurrentPerformance(100)
         else:
             self.__performance.setCurrentPerformance(100 / (5 * meanDifferenceHeuristicValues + cleaningEfficiencyRatio))
 
@@ -268,6 +262,21 @@ class Robot:
         self.__performance.reset()
 
     def adaptMaxNbOfActions(self):
-        currentPerformance = self.__performance.getCurrentPerformance()
+        meanCurrentPerformances = self.__performance.getMeanCurrentPerformance(self.__maxNbOfActions)
 
-        # if currentPerformance <= 50:
+        # print some informations
+        print()
+        print("Moyenne totale des performances (depuis le lancement)          : ", self.__performance.getFinalPerformance())
+        print("Mesure de performance pour 1 action                            : ", self.getCurrentPerformance())
+        print("Moyenne des performances sur la séquence d'action entière      : ", meanCurrentPerformances)
+
+        if meanCurrentPerformances <= 15:
+            self.__maxNbOfActions -= int(self.__maxNbOfActions * 0.4)
+            print("=> Diminution du nombre maximal d'actions du robot")
+        elif meanCurrentPerformances >= 30:
+            self.__maxNbOfActions += int(self.__maxNbOfActions * 0.4)
+            print("=> Augmentation du nombre maximal d'actions du robot")
+        else:
+            print("=> Conservation du nombre maximal d'actions du robot")
+
+        print("Nombre maximal d'actions pour la prochaine phase d'exploration : ", self.__maxNbOfActions)

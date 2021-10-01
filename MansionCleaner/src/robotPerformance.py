@@ -7,6 +7,7 @@ class RobotPerformance:
         self.__countPerformanceUpdates = 0
 
         # performance goes from 0 to 100 (100 being good performance)
+        self.__sumCurrentPerformances = 0
         self.__currentPerformance = 0
         self.__nbDirtCleaned = 0
         self.__nbJewelPickedUp = 0
@@ -62,6 +63,7 @@ class RobotPerformance:
 
     def setCurrentPerformance(self, performance):
         self.__currentPerformance = performance
+        self.__sumCurrentPerformances += performance
         self.__sumAllPerformances += performance
         self.__finalPerformance = self.__sumAllPerformances / self.__countPerformanceUpdates
 
@@ -78,6 +80,7 @@ class RobotPerformance:
         self.__currentPerformance = 0
         self.__differenceSumHeuristicValues = 0
         self.__statesHeuristicValues = []
+        self.__sumCurrentPerformances = 0
 
     def getStateHeuristicValue(self, index):
         return self.__statesHeuristicValues[index]
@@ -87,3 +90,6 @@ class RobotPerformance:
 
     def getMeanDifferenceHeuristicValues(self):
         return self.__differenceSumHeuristicValues / self.__countPerformanceUpdates
+
+    def getMeanCurrentPerformance(self, nbOfActions):
+        return self.__sumCurrentPerformances / nbOfActions

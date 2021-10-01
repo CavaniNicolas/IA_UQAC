@@ -134,9 +134,6 @@ def robotThreadFn(robot, mansion, problem, algorithm):
         else:
             robot.makeAction(mansion)
 
-        print("Current = ", robot.getCurrentPerformance())
-        print("Final = ", robot.getFinalPerformance())
-
         time.sleep(1)
 
 
