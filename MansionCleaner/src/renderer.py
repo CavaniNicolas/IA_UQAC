@@ -3,7 +3,7 @@ import turtle
 from state import State
 
 class Renderer:
-    __squareSize = 75
+    __squareSize = 100
 
     def __init__(self, onClose):
         turtle.pencolor("")  # No color to avoid construction lines
@@ -13,6 +13,11 @@ class Renderer:
         canvas = windows.getcanvas()
         root = canvas.winfo_toplevel()
         root.protocol("WM_DELETE_WINDOW", onClose)
+
+        # import shape into turtle
+        turtle.addshape('../resources/robot.gif')
+        turtle.addshape('../resources/jewel.gif')
+        turtle.addshape('../resources/dirt.gif')
 
     def drawState(self, state):
         turtle.pencolor("")
@@ -30,19 +35,19 @@ class Renderer:
             for j in range(mansionSize):
                 turtle.goto(startY + j * self.__squareSize, startX - i * self.__squareSize)
                 k = state.getMansion().getRoomState(i, j)
-                if k == 0:
-                    self.__drawSquare("white")
-                elif k == 1:
-                    self.__drawSquare("red")
+
+                self.__drawSquare("white")
+                if k == 1:
+                    self.__drawDirt()
                 elif k == 2:
-                    self.__drawSquare("blue")
-                else:
-                    self.__drawSquare("purple")
+                    self.__drawJewel()
+                elif k == 3:
+                    self.__drawDirt()
+                    turtle.goto(startY + j * self.__squareSize, startX - i * self.__squareSize)
+                    self.__drawJewel()
                 turtle.forward(self.__squareSize)
 
         self.__drawRobot(mansionSize, state.getRobot())
-
-        self.__drawColorsCaptions(mansionSize)
 
         turtle.update()
 
@@ -63,52 +68,19 @@ class Renderer:
         startY = -int(mansionSize / 2) * self.__squareSize
 
         turtle.goto(startY + robotJ * self.__squareSize + self.__squareSize / 2, startX - robotI * self.__squareSize + self.__squareSize / 4)
-        turtle.pencolor("black")
-        if robot.getIsChoosingAction():
-            turtle.fillcolor("green")
-        else:
-            turtle.fillcolor("black")
-        turtle.begin_fill()
-        turtle.down()
-        turtle.circle(self.__squareSize / 4)
-        turtle.up()
-        turtle.end_fill()
+        turtle.shape('../resources/robot.gif')
+        turtle.stamp()
 
-    def __drawColorsCaptions(self, mansionSize):
-        textOffsetX = 20 # offset to write text a little bit below each square
-        textOffsetY = 0 # offset to center text with each square
-        startX = int(mansionSize / 2) * self.__squareSize - self.__squareSize * 6
-        startY = -int(mansionSize / 2) * self.__squareSize
+    def __drawDirt(self):
+        offsetX = 3 * self.__squareSize / 4
+        offsetY = 3 * self.__squareSize / 4
+        turtle.goto( turtle.pos() + (offsetY, offsetX) )
+        turtle.shape('../resources/dirt.gif')
+        turtle.stamp()
 
-        turtle.pencolor("black")
-
-        # 'Empty' caption
-        textOffsetY = self.__squareSize - 7 * 8 # squareSize - (3 * textLength / 2) * fontSize
-        turtle.goto(startY, startX)
-        self.__drawSquare("white")
-        turtle.goto(startY + textOffsetY, startX - textOffsetX)
-        turtle.write("Empty")
-
-        # 'Dirt' caption
-        textOffsetY = self.__squareSize - 6 * 8 # squareSize - (3 * textLength / 2) * fontSize
-        startY += 4 * self.__squareSize / 3
-        turtle.goto(startY, startX)
-        self.__drawSquare("red")
-        turtle.goto(startY + textOffsetY, startX - textOffsetX)
-        turtle.write("Dirt")
-
-        # 'Jewel' caption
-        textOffsetY = self.__squareSize - 7 * 8 # squareSize - (3 * textLength / 2) * fontSize
-        startY += 4 * self.__squareSize / 3
-        turtle.goto(startY, startX)
-        self.__drawSquare("blue")
-        turtle.goto(startY + textOffsetY, startX - textOffsetX)
-        turtle.write("Jewel")
-
-        # 'Dirt + Jewel' caption
-        textOffsetY = self.__squareSize - 9 * 8 # squareSize - (3 * textLength / 2) * fontSize
-        startY += 4 * self.__squareSize / 3
-        turtle.goto(startY, startX)
-        self.__drawSquare("purple")
-        turtle.goto(startY + textOffsetY, startX - textOffsetX)
-        turtle.write("Dirt + Jewel")
+    def __drawJewel(self):
+        offsetX = 3 * self.__squareSize / 4
+        offsetY = self.__squareSize / 4
+        turtle.goto( turtle.pos() + (offsetY, offsetX) )
+        turtle.shape('../resources/jewel.gif')
+        turtle.stamp()
