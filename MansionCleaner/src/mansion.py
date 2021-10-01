@@ -19,6 +19,9 @@ class Mansion:
     def getRooms(self):
         return self.__rooms
 
+    def getRoom(self, i, j):
+        return self.__rooms[i][j]
+
     def getMansionSize(self):
         return self.__mansionSize
 

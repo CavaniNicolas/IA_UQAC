@@ -13,6 +13,31 @@ import threading
 import time
 
 
+# heuristic value : sum of remaining number of dirt and jewels, each number weighted by the minimum distance
+def heuristicRemainingDirtAndJewelsWithMinDistance(state):
+    nbDirt, nbJewels = state.getNbDirtAndJewels()
+    minDistanceDirt = 1000000
+    minDistanceJewel = 1000000
+    robotI, robotJ = state.getRobotPosition()
+    mansion = state.getMansion()
+    mansionSize = mansion.getMansionSize()
+
+    for i in range(mansionSize):
+        for j in range(mansionSize):
+            if mansion.getRoom(i, j).getHasDirt():
+                # room has dirt
+                distance = abs(robotI - i) + abs(robotJ - j)
+                if distance < minDistanceDirt:
+                    minDistanceDirt = distance
+
+            if mansion.getRoom(i, j).getHasJewel():
+                # room has jewel
+                distance = abs(robotI - i) + abs(robotJ - j)
+                if distance < minDistanceJewel:
+                    minDistanceJewel = distance
+
+    return nbDirt * (minDistanceDirt + 1) + nbJewels * (minDistanceJewel + 1)
+
 # heuristic value : sum of remaining number of dirt and jewels
 def heuristicRemainingDirtAndJewels(state):
 
@@ -94,7 +119,9 @@ def robotThreadFn(robot, mansion, problem, algorithm):
             robot.chooseActionDFS(problem)
             pass
         elif algorithm == "Greedy":
-            robot.chooseActionGreedySearch(problem, heuristicRemainingDirtAndJewels)
+            robot.chooseActionGreedySearch(problem, heuristicRemainingDirtAndJewelsWithMinDistance)
+        elif algorithm == "A*":
+            robot.chooseActionAStar(problem, heuristicRemainingDirtAndJewelsWithMinDistance)
         robot.makeAction(mansion)
         time.sleep(1)
 
@@ -147,7 +174,22 @@ def chooseSearchAlgorithm():
                 print("\nVeuillez saisir un nombre entier !\n")
     else:
         # informed exploration
-        print("L'algorithme utilisé est : Greedy Search")
+        while (algorithm < 1 or algorithm > 2):
+            print("Quel algorithme choisissez-vous ? :")
+            print("(1) Greedy search")
+            print("(2) A* (Attention : cet algorithme peut être très long)")
+
+            try:
+                algorithm = int(input())
+                if (algorithm < 1 or algorithm > 2):
+                    print("\nVeuillez saisir un entier entre 1 et 2\n")
+                else:
+                    if algorithm == 1:
+                        return "Greedy"
+                    else:
+                        return "A*"
+            except ValueError:
+                print("\nVeuillez saisir un nombre entier !\n")
         return "Greedy"
 
 if __name__ == "__main__":

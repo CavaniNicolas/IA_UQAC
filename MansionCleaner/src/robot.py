@@ -150,6 +150,37 @@ class Robot:
         self.__isChoosingAction = False
         return None
 
+    def chooseActionAStar(self, problem, heuristic):
+        self.__isChoosingAction = True
+        mansionInitialState = State(self.__mansionView, self)
+        initialNode = Node(mansionInitialState, None, None, 0, 0)
+        fringe = [initialNode]
+        visitedStates = []
+
+        while len(fringe) > 0:
+            # select the node with the lowest heuristic value
+            minValue = 100000000000
+            indexMinValue = 0
+            for i in range(len(fringe)):
+                tmpValue = heuristic(fringe[i].getState()) + fringe[i].getPathCost()
+                if tmpValue < minValue:
+                    minValue = tmpValue
+                    indexMinValue = i
+            node = fringe.pop(indexMinValue)
+
+            visitedStates.append(node.getState())
+            if problem.goalTest(node.getState()):
+                self.__isChoosingAction = False
+                self.createActionSequence(node)
+                return node
+
+            successors = node.expand(problem)
+            for s in successors:
+                if s.getState() not in visitedStates:
+                    fringe.append(s)
+        self.__isChoosingAction = False
+        return None
+
     def makeAction(self, mansion):
         for action in self.__actionSequence:
             if action == Action.CLEAN:
