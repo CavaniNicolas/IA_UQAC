@@ -102,16 +102,8 @@ def robotThreadFn(robot, mansion, problem, algorithm):
 def mansionThreadFn(mansion, robot):
     global isRunning
     while isRunning:
-        # TODO: generate dirt and jewel
-        rooms = mansion.getRooms()
-        for i in range(len(rooms)):
-            for j in range(len(rooms)):
-                if robot.getI() == i and robot.getJ() == j:
-                    print("[{0}]".format(rooms[i][j]), end="")
-                else:
-                    print(" {0} ".format(rooms[i][j]), end="")
-            print()
-        print()
+        mansion.generateRandomDirt()
+        mansion.generateRandomJewel()
         time.sleep(1)
 
 

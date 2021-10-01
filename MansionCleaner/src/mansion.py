@@ -4,23 +4,17 @@ import random
 from room import Room
 
 class Mansion:
-    def __init__(self, mansionSize, rooms = None):
+    def __init__(self, mansionSize, rooms = None, probaDirt = 2, probaJewel = 1):
         self.__mansionSize = mansionSize
-        if (rooms == None):
-            self.__rooms = [[Room(i, j, random.randint(0, 1), random.randint(0, 1)) for j in range(self.__mansionSize)] for i in range(self.__mansionSize)]
-        else:
-            self.__rooms = rooms
-        # self.generateRandomDirt(5)
-        # self.generateRandomJewel(2)
         self.__nbOfDirt = 0
         self.__nbOfJewels = 0
 
-        for i in range(mansionSize):
-            for j in range(mansionSize):
-                if self.__rooms[i][j].getHasDirt():
-                    self.__nbOfDirt += 1
-                if self.__rooms[i][j].getHasJewel():
-                    self.__nbOfJewels += 1
+        if (rooms == None):
+            self.__rooms = [[Room(i, j, False, False) for j in range(self.__mansionSize)] for i in range(self.__mansionSize)]
+            self.generateRandomDirt(probaDirt)
+            self.generateRandomJewel(probaJewel)
+        else:
+            self.__rooms = rooms
 
     def getRooms(self):
         return self.__rooms
@@ -58,19 +52,25 @@ class Mansion:
 
         self.__rooms[i][j].pickupJewel()
 
-    # def generateRandomDirt(self, n):
-    #     for i in range(n):
-    #         x = random.randint(0, self.__mansionSize)
-    #         y = random.randint(0, self.__mansionSize)
-    #         if self.__rooms[x][y] != 1 and self.__rooms[x][y] != 3:
-    #             self.__rooms[x][y] += 1
+    def generateRandomDirt(self, n=2):
+        for i in range(self.__mansionSize):
+            for j in range(self.__mansionSize):
+                proba = random.randint(0, 100)  # Random value between 0 and 100
+                roomState = self.getRoomState(i, j)
+                if roomState != 1 and roomState != 3 and proba < n:
+                    # There is no dirt in this room
+                    self.__rooms[i][j].setHasDirt(True)
+                    self.__nbOfDirt += 1
 
-    # def generateRandomJewel(self, n):
-    #     for i in range(n):
-    #         x = random.randint(0, self.__mansionSize)
-    #         y = random.randint(0, self.__mansionSize)
-    #         if self.__rooms[x][y] != 2 and self.__rooms[x][y] != 3:
-    #             self.__rooms[random.randint(0, self.__mansionSize)][random.randint(0, self.__mansionSize)] += 2
+    def generateRandomJewel(self, n=1):
+        for i in range(self.__mansionSize):
+            for j in range(self.__mansionSize):
+                proba = random.randint(0, 100) # Random value between 0 and 100
+                roomState = self.getRoomState(i, j)
+                if roomState != 2 and roomState != 3 and proba < n:
+                    # There is no jewel in this room
+                    self.__rooms[i][j].setHasJewel(True)
+                    self.__nbOfJewels += 1
 
     def __str__(self):
         str = ""
