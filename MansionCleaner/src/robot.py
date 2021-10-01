@@ -72,6 +72,7 @@ class Robot:
             self.__actionSequence.insert(0, endNode.getOperator())
             endNode = endNode.getParentNode()
 
+    # Sensor : Observe the "true" world and update internal state
     def percept(self, mansion):
         self.__mansionView = copy.deepcopy(mansion)
 
@@ -181,6 +182,7 @@ class Robot:
         self.__isChoosingAction = False
         return None
 
+    # Effector : make actions on the "true" world
     def makeAction(self, mansion):
         for action in self.__actionSequence:
             if action == Action.CLEAN:
