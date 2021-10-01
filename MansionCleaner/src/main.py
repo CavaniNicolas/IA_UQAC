@@ -110,8 +110,11 @@ isRunning = True
 
 def robotThreadFn(robot, mansion, problem, algorithm):
     global isRunning
+
     while isRunning:
+        robot.resetPerformance()
         robot.percept(mansion)
+
         if algorithm == "BFS":
             robot.chooseActionBFS(problem)
             pass
@@ -122,7 +125,18 @@ def robotThreadFn(robot, mansion, problem, algorithm):
             robot.chooseActionGreedySearch(problem, heuristicRemainingDirtAndJewelsWithMinDistance)
         elif algorithm == "A*":
             robot.chooseActionAStar(problem, heuristicRemainingDirtAndJewelsWithMinDistance)
-        robot.makeAction(mansion)
+
+        if algorithm == "Greedy" or algorithm == "A*":
+            robot.makeAction(mansion, heuristicRemainingDirtAndJewelsWithMinDistance)
+
+            # informed exploration : robot can adapt the max number of actions in his plan
+            robot.adaptMaxNbOfActions()
+        else:
+            robot.makeAction(mansion)
+
+        print("Current = ", robot.getCurrentPerformance())
+        print("Final = ", robot.getFinalPerformance())
+
         time.sleep(1)
 
 
@@ -158,7 +172,7 @@ def chooseSearchAlgorithm():
         # uninformed exploration
         while (algorithm < 1 or algorithm > 2):
             print("Quel algorithme choisissez-vous ? :")
-            print("(1) Bread-First Search (Attention : cet algorithme peut être très long)")
+            print("(1) Bread-First Search (Attention : cet algorithme peut être long)")
             print("(2) Depth-First Search")
 
             try:
@@ -177,7 +191,7 @@ def chooseSearchAlgorithm():
         while (algorithm < 1 or algorithm > 2):
             print("Quel algorithme choisissez-vous ? :")
             print("(1) Greedy search")
-            print("(2) A* (Attention : cet algorithme peut être très long)")
+            print("(2) A* (Attention : cet algorithme peut être long)")
 
             try:
                 algorithm = int(input())

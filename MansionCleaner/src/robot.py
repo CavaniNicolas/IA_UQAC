@@ -5,20 +5,24 @@ import time
 from node import Node
 from state import State
 from action import Action
+from robotPerformance import RobotPerformance
 
 class Robot:
     def __init__(self, i, j, mansion=None):
         self.__i = i
         self.__j = j
-        self.__energyUsed = 0
-        self.__performanceMeasure = 0
+
+        self.__performance = RobotPerformance()
+
+        self.__energyUsed = 0 # a mettre dans __performance
+
         self.__mansionView = mansion # a verifier par rapport a la copie / reference
         # remember the number of times the robot went through those rooms
         self.__visitedRooms = [[0 for j in range(mansion.getMansionSize())] for i in range(mansion.getMansionSize())]
         self.__maxVisitsPerRoom = 1
         self.__isChoosingAction = False
         self.__actionSequence = []
-        self.__statesHeuristicValues = []
+        self.__maxNbOfActions = 5
 
     def getEnergyUsed(self):
         return self.__energyUsed
@@ -71,13 +75,6 @@ class Robot:
         self.__actionSequence = []
         while endNode is not None:
             self.__actionSequence.insert(0, endNode.getOperator())
-            endNode = endNode.getParentNode()
-
-    def createStatesHeuristicValues(self, heuristicFn, endNode):
-        self.__statesHeuristicValues = []
-        while endNode is not None:
-            value = heuristicFn(endNode.getState())
-            self.__statesHeuristicValues.insert(0, value)
             endNode = endNode.getParentNode()
 
     # Sensor : Observe the "true" world and update internal state
@@ -151,7 +148,7 @@ class Robot:
             if problem.goalTest(node.getState()):
                 self.__isChoosingAction = False
                 self.createActionSequence(node)
-                self.__statesHeuristicValues(heuristicFn, node)
+                self.__performance.createStatesHeuristicValues(heuristicFn, node)
                 return node
 
             successors = node.expand(problem)
@@ -183,7 +180,7 @@ class Robot:
             if problem.goalTest(node.getState()):
                 self.__isChoosingAction = False
                 self.createActionSequence(node)
-                self.__statesHeuristicValues(heuristicFn, node)
+                self.__performance.createStatesHeuristicValues(heuristicFn, node)
                 return node
 
             successors = node.expand(problem)
@@ -196,50 +193,77 @@ class Robot:
     # Effector : make actions on the "true" world
     def makeAction(self, mansion, heuristicFn = None):
         countAction = 0
-        countTEMPORARY = 0
-        maxCountTemporary = 5
-        sumEstimatedValues = 0
-        sumRealValues = 0
-        penalty = 0
 
         for action in self.__actionSequence:
+
             if action == Action.CLEAN:
                 jewelSucked = mansion.cleanRoom(self.__i, self.__j)
+                self.__performance.addNbDirtCleaned()
                 if jewelSucked:
-                    penalty += 6
+                    self.__performance.addPenalty(6)
+
             elif action == Action.PICKUP:
                 mansion.pickupJewelInRoom(self.__i, self.__j)
+                self.__performance.addNbJewelPickedUp()
+
             elif action == Action.MOVE_UP:
                 self.__i -= 1
+
             elif action == Action.MOVE_LEFT:
                 self.__j -= 1
+
             elif action == Action.MOVE_DOWN:
                 self.__i += 1
+
             elif action == Action.MOVE_RIGHT:
                 self.__j += 1
 
             self.__energyUsed += 1
             countAction += 1
-            countTEMPORARY += 1
 
             if heuristicFn is not None:
-                realState = State(mansion, self)
-                realHeuristicValue = heuristicFn(realState)
-                estimatedHeuristicValue = self.__statesHeuristicValues[countAction]
-
-                sumEstimatedValues += estimatedHeuristicValue
-                sumRealValues += realHeuristicValue
-
-                if countTEMPORARY >= maxCountTemporary:
-                    countTEMPORARY = 0
-                    differenceHeuristicValue = sumEstimatedValues - sumRealValues
-
-                    self.__performanceMeasure = 100 / (differenceHeuristicValue + self.__energyUsed + penalty)
-
-                    if self.__performanceMeasure <= 50:
-                        return
-
-                    sumEstimatedValues = 0
-                    sumRealValues = 0
+                self.determinePerformance(heuristicFn, State(mansion, self), countAction - 1)
+                if countAction >= self.__maxNbOfActions:
+                    return
 
             time.sleep(1)
+
+    def determinePerformance(self, heuristicFn, realState, indexAction):
+        # get the real heuristic value
+        realHeuristicValue = heuristicFn(realState)
+        estimatedHeuristicValue = self.__performance.getStateHeuristicValue(indexAction)
+
+        # add the difference between the estimated and the real heuristic values
+        self.__performance.addDifferenceSumHeuristicValues(realHeuristicValue - estimatedHeuristicValue)
+
+        # get some state values after the action
+        nbDirtCleaned = self.__performance.getNbDirtCleaned()
+        nbJewelPickedUp = self.__performance.getNbJewelPickedUp()
+        penalty = self.__performance.getPenalty()
+
+        # determine the cleaningEfficiencyRatio (good when small)
+        if nbDirtCleaned + nbJewelPickedUp == 0:
+            cleaningEfficiencyRatio = (self.__energyUsed / 0.5) + penalty
+        else:
+            cleaningEfficiencyRatio = (self.__energyUsed / (nbDirtCleaned + nbJewelPickedUp)) + penalty
+
+        # update performance
+        differenceSumHeuristicValues = self.__performance.getDifferenceSumHeuristicValues()
+        if differenceSumHeuristicValues + cleaningEfficiencyRatio == 0:
+            self.__performance.setCurrentPerformance(100 / 1)
+        else:
+            self.__performance.setCurrentPerformance(100 / (differenceSumHeuristicValues + cleaningEfficiencyRatio))
+
+    def getFinalPerformance(self):
+        return self.__performance.getFinalPerformance()
+
+    def getCurrentPerformance(self):
+        return self.__performance.getCurrentPerformance()
+
+    def resetPerformance(self):
+        self.__performance.reset()
+
+    def adaptMaxNbOfActions(self):
+        currentPerformance = self.__performance.getCurrentPerformance()
+
+        # if currentPerformance <= 50:
