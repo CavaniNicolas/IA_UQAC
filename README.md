@@ -1,4 +1,4 @@
-# AI projects as part of UQAC classes
+# AI projects as part of a UQAC class
 
 ## MansionCleaner
 
