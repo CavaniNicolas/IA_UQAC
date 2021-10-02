@@ -2,11 +2,11 @@
 class RobotPerformance:
 
     def __init__(self):
+        # performance goes from 0 to 100 (100 being good performance)
         self.__finalPerformance = 0
         self.__sumAllPerformances = 0
         self.__countPerformanceUpdates = 0
 
-        # performance goes from 0 to 100 (100 being good performance)
         self.__sumCurrentPerformances = 0
         self.__currentPerformance = 0
         self.__nbDirtCleaned = 0

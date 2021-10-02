@@ -1,3 +1,4 @@
+
 class Node:
     def __init__(self, state, parentNode, operator, depth, pathCost):
         self.__state = state
@@ -5,6 +6,15 @@ class Node:
         self.__operator = operator
         self.__depth = depth
         self.__pathCost = pathCost
+
+    def expand(self, problem):
+        successors = []
+
+        results = problem.successorFn(self.__state)
+        for resultState, resultAction in results:
+            successors.append(Node(resultState, self, resultAction, self.__depth + 1, self.__pathCost + 1))
+
+        return successors
 
     def __str__(self):
         return "- State :\n" + str(self.__state) + "\n- Operator : " + str(
@@ -25,12 +35,3 @@ class Node:
 
     def getPathCost(self):
         return self.__pathCost
-
-    def expand(self, problem):
-        successors = []
-
-        results = problem.successorFn(self.__state)
-        for resultState, resultAction in results:
-            successors.append(Node(resultState, self, resultAction, self.__depth + 1, self.__pathCost + 1))
-
-        return successors

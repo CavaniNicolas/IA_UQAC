@@ -1,3 +1,4 @@
+
 import copy
 import random
 import time
@@ -25,45 +26,6 @@ class Robot:
         self.__actionSequence = []
         self.__maxNbOfActions = 20
 
-    def getEnergyUsed(self):
-        return self.__energyUsed
-
-    def setEnergyUsed(self, energy):
-        self.__energyUsed = energy
-
-    def getI(self):
-        return self.__i
-
-    def setI(self, i):
-        self.__i = i
-
-    def getJ(self):
-        return self.__j
-
-    def setJ(self, j):
-        self.__j = j
-
-    def getPosition(self):
-        return [self.__i,  self.__j]
-
-    def setPosition(self, i, j):
-        self.__i = i
-        self.__j = j
-
-    def hasRoomBeenVisited(self, i, j):
-        return self.__visitedRooms[i][j]
-
-    def getMaxVisitsPerRoom(self):
-        return self.__maxVisitsPerRoom
-
-    def visitRoom(self, i, j):
-        self.__visitedRooms[i][j] += 1
-
-    def getMansionView(self):
-        return self.__mansionView
-
-    def getIsChoosingAction(self):
-        return self.__isChoosingAction
 
     def createActionSequence(self, endNode):
         # create the sequence of actions by browsing the nodes of the solution
@@ -72,10 +34,12 @@ class Robot:
             self.__actionSequence.insert(0, endNode.getOperator())
             endNode = endNode.getParentNode()
 
+
     # Sensor : Observe the "true" world and update internal state
     def percept(self, mansion):
         self.__energyUsed += 1
         self.__mansionView = copy.deepcopy(mansion)
+
 
     def chooseActionBFS(self, problem):
         self.__isChoosingAction = True
@@ -99,6 +63,7 @@ class Robot:
         self.__isChoosingAction = False
         return None
 
+
     def chooseActionDFS(self, problem):
         self.__isChoosingAction = True
         mansionInitialState = State(self.__mansionView, self)
@@ -120,6 +85,7 @@ class Robot:
                     fringe.insert(0, s)
         self.__isChoosingAction = False
         return None
+
 
     def chooseActionGreedySearch(self, problem, heuristicFn):
         self.__isChoosingAction = True
@@ -153,6 +119,7 @@ class Robot:
         self.__isChoosingAction = False
         return None
 
+
     def chooseActionAStar(self, problem, heuristicFn):
         self.__isChoosingAction = True
         mansionInitialState = State(self.__mansionView, self)
@@ -184,6 +151,7 @@ class Robot:
                     fringe.append(s)
         self.__isChoosingAction = False
         return None
+
 
     # Effector : make actions on the "true" world
     def makeAction(self, mansion, heuristicFn = None):
@@ -223,6 +191,7 @@ class Robot:
 
             time.sleep(1)
 
+
     def determinePerformance(self, heuristicFn, realState, indexAction):
         # get the real heuristic value
         realHeuristicValue = heuristicFn(realState)
@@ -252,15 +221,6 @@ class Robot:
         else:
             self.__performance.setCurrentPerformance(100 / (5 * meanDifferenceHeuristicValues + cleaningEfficiencyRatio))
 
-    def getFinalPerformance(self):
-        return self.__performance.getFinalPerformance()
-
-    def getCurrentPerformance(self):
-        return self.__performance.getCurrentPerformance()
-
-    def resetPerformance(self):
-        self.__energyUsed = 0
-        self.__performance.reset()
 
     def adaptMaxNbOfActions(self):
         meanCurrentPerformances = self.__performance.getMeanCurrentPerformance(self.__maxNbOfActions)
@@ -281,3 +241,54 @@ class Robot:
             print("=> Conservation du nombre maximal d'actions du robot")
 
         print("Nombre maximal d'actions pour la prochaine phase d'exploration : ", self.__maxNbOfActions)
+
+
+    def getFinalPerformance(self):
+        return self.__performance.getFinalPerformance()
+
+    def getCurrentPerformance(self):
+        return self.__performance.getCurrentPerformance()
+
+    def resetPerformance(self):
+        self.__energyUsed = 0
+        self.__performance.reset()
+
+    def hasRoomBeenVisited(self, i, j):
+        return self.__visitedRooms[i][j]
+
+    def getMaxVisitsPerRoom(self):
+        return self.__maxVisitsPerRoom
+
+    def visitRoom(self, i, j):
+        self.__visitedRooms[i][j] += 1
+
+    def getMansionView(self):
+        return self.__mansionView
+
+    def getI(self):
+        return self.__i
+
+    def setI(self, i):
+        self.__i = i
+
+    def getJ(self):
+        return self.__j
+
+    def setJ(self, j):
+        self.__j = j
+
+    def getIsChoosingAction(self):
+        return self.__isChoosingAction
+
+    def getEnergyUsed(self):
+        return self.__energyUsed
+
+    def setEnergyUsed(self, energy):
+        self.__energyUsed = energy
+
+    def getPosition(self):
+        return [self.__i,  self.__j]
+
+    def setPosition(self, i, j):
+        self.__i = i
+        self.__j = j

@@ -4,17 +4,8 @@ class State:
         self.__mansion = mansion
         self.__robot = robot
 
-    def getMansion(self):
-        return self.__mansion
-
-    def getMansionState(self):
-        return self.__mansion.getRooms()
-
-    def getRobot(self):
-        return self.__robot
-
-    def getRobotPosition(self):
-        return self.__robot.getPosition()
+    def __eq__(self, other):
+        return self.getMansionState() == other.getMansionState() and self.getRobotPosition() == other.getRobotPosition()
 
     def __str__(self):
         str = ""
@@ -29,8 +20,17 @@ class State:
                 str += "\n"
         return str
 
-    def __eq__(self, other):
-        return self.getMansionState() == other.getMansionState() and self.getRobotPosition() == other.getRobotPosition()
+    def getMansion(self):
+        return self.__mansion
+
+    def getMansionState(self):
+        return self.__mansion.getRooms()
+
+    def getRobot(self):
+        return self.__robot
+
+    def getRobotPosition(self):
+        return self.__robot.getPosition()
 
     def getNbDirtAndJewels(self):
         return self.__mansion.getDirtAndJewelsLeft()

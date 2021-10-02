@@ -1,6 +1,8 @@
+
 import random
 import copy
 import time
+import threading
 
 from action import Action
 from robot import Robot
@@ -8,9 +10,6 @@ from problem import Problem
 from state import State
 from mansion import Mansion
 from renderer import Renderer
-
-import threading
-import time
 
 
 # heuristic value : sum of remaining number of dirt and jewels, each number weighted by the minimum distance
@@ -49,6 +48,7 @@ def heuristicRemainingDirtAndJewels(state):
 # returns True if the mansion is clean
 def tp1GoalTest(state):
     return [0, 0] == state.getMansion().getDirtAndJewelsLeft()
+
 
 # returns the successor states of "state" from the tree
 def tp1SuccessorFn(state):
@@ -202,6 +202,7 @@ def chooseSearchAlgorithm():
             except ValueError:
                 print("\nVeuillez saisir un nombre entier !\n")
         return "Greedy"
+
 
 if __name__ == "__main__":
 
