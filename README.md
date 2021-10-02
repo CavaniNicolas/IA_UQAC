@@ -17,3 +17,7 @@ Four search algorithms were implemented and can be passed to the robot for him t
   - A*
   
   ![appScreenshot](https://github.com/CavaniNicolas/IA_UQAC/blob/main/MansionCleaner/doc/appScreenshot.PNG)
+
+### Getting Started
+
+To run MansionCleaner, working directory must be ```src/```, then simply run ```python3 main.py```.
