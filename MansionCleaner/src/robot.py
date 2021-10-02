@@ -14,9 +14,10 @@ class Robot:
 
         self.__performance = RobotPerformance()
 
-        self.__energyUsed = 0 # a mettre dans __performance
+        self.__energyUsed = 0
 
-        self.__mansionView = mansion # a verifier par rapport a la copie / reference
+        self.__mansionView = mansion
+
         # remember the number of times the robot went through those rooms
         self.__visitedRooms = [[0 for j in range(mansion.getMansionSize())] for i in range(mansion.getMansionSize())]
         self.__maxVisitsPerRoom = 1
