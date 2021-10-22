@@ -1,0 +1,19 @@
+V est l'ensemble des variables : Les cases d'une matrice 9x9
+D est {1,2,3,4,5,6,7,8,9}
+C est l'ensemble des contraintes : un unique chiffre de 1 a 9  par ligne, par colonne et par région de 3x3
+
+chaque variable a 20 contraintes
+chaque contraintes ne relie que 2 variables entres elles
+
+Assignment : // la grille du sudoku
+sudoku : Matrice 9x9 de Cells
+isComplete // verifie si une valeur a ete assignée a chaque case
+isConsistent // verifie pour toutes les cases que toutes les contraintes soient respectées
+getNextUnassignedCell => MRV et degree heuristic
+
+Cell : // une case de la grille de sudoku
+setValue(val)
+getPossibleValues
+getPossibleValuesOrdered(assignment) : returns __possible values trié selon Least Constraining Value
+
+AC3 a faire en dernier
