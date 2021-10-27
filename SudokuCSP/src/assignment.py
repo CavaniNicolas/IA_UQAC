@@ -5,6 +5,7 @@ class Assignment:
     def __init__(self, sudoku):
         # Sudoku is a matrix of Cells
         self.__sudoku = sudoku
+        self.initialDomainAdjustment()
 
     def checkIsConsistant(self, i, j, value):
         # Check if the given value for the cell [i, j] respects the constraints
@@ -149,3 +150,14 @@ class Assignment:
                 return False
 
         return True
+
+    def initialDomainAdjustment(self):
+        # Adjust the domain of each cells at the beginning (after reading the sudoku)
+        for i in range(9):
+            for j in range(9):
+                if not self.__sudoku[i][j].hasValue():
+                    cellConstraints = self.getCellConstraints(i, j)
+
+                    for (row, column) in cellConstraints:
+                        if self.__sudoku[row][column].hasValue():
+                            self.__sudoku[i][j].removeValueFromDomain(self.__sudoku[row][column].getValue())
