@@ -1,3 +1,4 @@
+from copy import copy
 
 class Cell:
     def __init__(self, value = None, domain = []):
@@ -7,16 +8,18 @@ class Cell:
         self.__domain = domain
 
     def addValueToDomain(self, value):
-        pass
+        if value not in self.__domain:
+            self.__domain.append(value)
 
-    def removeValueToDomain(self, value):
-        pass
+    def removeValueFromDomain(self, value):
+        if value in self.__domain:
+            self.__domain.remove(value)
 
     def hasValue(self):
         return self.__value != None
 
     def getDomain(self):
-        return self.__domain
+        return copy(self.__domain)
 
     def getValue(self):
         return self.__value

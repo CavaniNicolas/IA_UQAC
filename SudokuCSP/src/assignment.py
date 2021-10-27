@@ -59,12 +59,22 @@ class Assignment:
         orderedDomainValuesCell = self.orderedDomainValues(cellI, cellJ)
 
         for value in orderedDomainValuesCell:
-            if self.checkIsConsistant(cellI, cellJ, value):
+            if self.forwardChecking(cellI, cellJ, value):
                 self.__sudoku[cellI][cellJ].setValue(value)
+
+                cellConstraints = self.getCellConstraints(cellI, cellJ)
+                for (row, column) in cellConstraints:
+                    self.__sudoku[row][column].removeValueFromDomain(value)
+
                 result = self.backtracking()
+
                 if result:
                     return result
+
                 self.__sudoku[cellI][cellJ].setValue(None)
+
+                for (row, column) in cellConstraints:
+                    self.__sudoku[row][column].addValueToDomain(value)
         return False
 
     def leastConstrainingValue(self, i, j):
@@ -124,3 +134,18 @@ class Assignment:
                     cellConstraint.append((currentI, currentJ))
 
         return cellConstraint
+
+    def forwardChecking(self, i, j, value):
+        cellConstraints = self.getCellConstraints(i, j)
+
+        for (row, column) in cellConstraints:
+            cellDomain = self.__sudoku[row][column].getDomain()
+
+            if value in cellDomain:
+                cellDomain.remove(value)
+
+            if len(cellDomain) == 0 and not self.__sudoku[row][column].hasValue():
+                # The cell has no more legal values
+                return False
+
+        return True
