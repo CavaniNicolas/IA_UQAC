@@ -9,28 +9,10 @@ class Assignment:
     def checkIsConsistant(self, i, j, value):
         # Check if the given value for the cell [i, j] respects the constraints
 
-        # Check the entire column
-        for row in range(9):
-            if row != i:
-                if self.__sudoku[row][j].getValue() == value:
-                    return False
-
-        # Check the entire row
-        for column in range(9):
-            if column != j:
-                if self.__sudoku[i][column].getValue() == value:
-                    return False
-
-        # Check the entire 3x3 square
-        squareStartI = i - i % 3
-        squareStartJ = j - j % 3
-        for row in range(3):
-            currentI = squareStartI + row
-            for column in range(3):
-                currentJ = squareStartJ + column
-                if currentI != i and currentJ != j:
-                    if self.__sudoku[currentI][currentJ].getValue() == value:
-                        return False
+        cellConstraints = self.getCellConstraints(i, j)
+        for (row, column) in cellConstraints:
+            if self.__sudoku[row][column].getValue() == value:
+                return False
 
         return True
 
@@ -66,7 +48,7 @@ class Assignment:
         return res
 
     def orderedDomainValues(self, i, j):
-        return self.__sudoku[i][j].getDomain()
+        return self.leastConstrainingValue(i, j)
 
     def backtracking(self):
         if self.isComplete():
@@ -84,3 +66,61 @@ class Assignment:
                     return result
                 self.__sudoku[cellI][cellJ].setValue(None)
         return False
+
+    def leastConstrainingValue(self, i, j):
+        cellDomain = self.__sudoku[i][j].getDomain()
+
+        orderedDomainValues = []
+
+        numConstrainedCells = dict()
+
+        for value in cellDomain:
+            numConstrainedCells[value] = 0
+
+            if self.checkIsConsistant(i, j, value):
+                cellConstraints = self.getCellConstraints(i, j)
+                for (row, column) in cellConstraints:
+                    if not self.__sudoku[row][column].hasValue() and self.checkIsConsistant(row, column, value):
+                        numConstrainedCells[value] += 1
+            else:
+                numConstrainedCells[value] = 1000
+
+        # Order values
+        for n in range(len(cellDomain)):
+            currentMin = float('inf')
+            currentValue = 0
+            for value in cellDomain:
+                if numConstrainedCells[value] < currentMin:
+                    currentMin = numConstrainedCells[value]
+                    currentValue = value
+
+            orderedDomainValues.append(currentValue)
+            numConstrainedCells[currentValue] = float('inf')
+
+        return orderedDomainValues
+
+    def getCellConstraints(self, i, j):
+        # Return a list containing all the coordinates of the cells applying a constraint on the cell [i, j]
+        cellConstraint = []
+
+        # Entire column
+        for row in range(9):
+            if row != i:
+                cellConstraint.append((row, j))
+
+        # Entire row
+        for column in range(9):
+            if column != j:
+                cellConstraint.append((i, column))
+
+        # Entire 3x3 square
+        squareStartI = i - i % 3
+        squareStartJ = j - j % 3
+        for row in range(3):
+            currentI = squareStartI + row
+            for column in range(3):
+                currentJ = squareStartJ + column
+                if currentI != i and currentJ != j:
+                    cellConstraint.append((currentI, currentJ))
+
+        return cellConstraint
