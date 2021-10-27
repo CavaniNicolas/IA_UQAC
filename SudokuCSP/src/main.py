@@ -1,6 +1,42 @@
 
 from assignment import Assignment
+from cell import Cell
 
+def readSudoku(filepath):
+    sudoku = [[None for j in range(9)] for i in range(9)]
+    with open(filepath, 'r') as file:
+        currentI = 0
+        for line in file:
+            line = line.rstrip()
+
+            if line[0] == "-":
+                continue
+
+            currentJ = 0
+            for i in range(len(line)):
+                if line[i] != '|':
+                    if line[i] == '.':
+                        sudoku[currentI][currentJ] = Cell(None, [1, 2, 3, 4, 5, 6, 7, 8, 9])
+                    else:
+                        sudoku[currentI][currentJ] = Cell(int(line[i]), [])
+                    currentJ += 1
+
+            currentI += 1
+    return sudoku
 
 if __name__ == "__main__":
-	print("Hello World")
+    sudoku = readSudoku("../resources/sudoku1.txt")
+    assignement = Assignment(sudoku)
+
+    print("========= Sudoku initial =========")
+    print(assignement)
+    print("==================================")
+
+    print()
+
+    if assignement.backtracking():
+        print("========= Solution =========")
+        print(assignement)
+        print("==================================")
+    else:
+        print("Ce sudoku n'a pas de solution !")

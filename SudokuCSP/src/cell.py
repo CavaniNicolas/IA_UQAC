@@ -1,22 +1,22 @@
 
 class Cell:
-    def __init__(self, sudoku):
+    def __init__(self, value = None, domain = []):
         # Value in the cell (int from 1 to 9)
-        self.__value
+        self.__value = value
         # List of possible values for this cell
-        self.__possibleValues
+        self.__domain = domain
 
-    def addPossibleValue(self, value):
+    def addValueToDomain(self, value):
         pass
 
-    def removePossibleValue(self, value):
+    def removeValueToDomain(self, value):
         pass
 
     def hasValue(self):
-        return True
+        return self.__value != None
 
-    def getPossibleValues(self):
-        return self.__possibleValues
+    def getDomain(self):
+        return self.__domain
 
     def getValue(self):
         return self.__value
@@ -26,4 +26,7 @@ class Cell:
 
     def __str__(self):
         # return Cell value in a string
-        return str(self.__value)
+        if self.__value:
+            return str(self.__value)
+        else:
+            return "."
