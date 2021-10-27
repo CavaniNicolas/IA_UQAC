@@ -64,8 +64,10 @@ class Assignment:
                 self.__sudoku[cellI][cellJ].setValue(value)
 
                 cellConstraints = self.getCellConstraints(cellI, cellJ)
+                trulyRemoved = list()   # Position of the cells where the value has been truly removed from the domain
                 for (row, column) in cellConstraints:
-                    self.__sudoku[row][column].removeValueFromDomain(value)
+                    if self.__sudoku[row][column].removeValueFromDomain(value):
+                        trulyRemoved.append((row, column))
 
                 result = self.backtracking()
 
@@ -74,7 +76,8 @@ class Assignment:
 
                 self.__sudoku[cellI][cellJ].setValue(None)
 
-                for (row, column) in cellConstraints:
+                # Put the value back only in the domain of the cells where the value had been truly removed
+                for (row, column) in trulyRemoved:
                     self.__sudoku[row][column].addValueToDomain(value)
         return False
 

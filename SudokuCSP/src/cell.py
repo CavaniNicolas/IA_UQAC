@@ -14,6 +14,8 @@ class Cell:
     def removeValueFromDomain(self, value):
         if value in self.__domain:
             self.__domain.remove(value)
+            return True
+        return False
 
     def hasValue(self):
         return self.__value != None
