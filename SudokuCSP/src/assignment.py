@@ -102,35 +102,38 @@ class Assignment:
 
         # Iterate through each remaining legal values (ordered by preference)
         for value in orderedDomainValues:
-            self.__sudoku[cellI][cellJ].setDomain([value])
+            # Check if putting the value in the cell results in a consistant assignment
+            if self.checkValueIsConsistant(cellI, cellJ, value):
 
-            allRemovals = [] # Triplet (i, j, value) of all the removals (from cells' domain) made in the iteration
+                self.__sudoku[cellI][cellJ].setDomain([value])
 
-            # AC-3 checking
-            if self.AC3(copy(AC3Queue), allRemovals):
-                self.__sudoku[cellI][cellJ].setValue(value)
+                allRemovals = [] # Triplet (i, j, value) of all the removals (from cells' domain) made in the iteration
 
-                # Remove inconsistent values in the neighbours' domain
-                # (Note : normally already done in AC-3 checking)
-                for (tmpI, tmpJ) in cellConstraints:
-                    self.removeInconsistentValues(tmpI, tmpJ, cellI, cellJ, allRemovals)
+                # AC-3 checking
+                if self.AC3(copy(AC3Queue), allRemovals):
+                    self.__sudoku[cellI][cellJ].setValue(value)
 
-                # Continue backtracking with the new assignment
-                result = self.backtracking()
+                    # Remove inconsistent values in the neighbours' domain
+                    # (Note : normally already done in AC-3 checking)
+                    for (tmpI, tmpJ) in cellConstraints:
+                        self.removeInconsistentValues(tmpI, tmpJ, cellI, cellJ, allRemovals)
 
-                if result:
-                    # Solution has been found
-                    return result
+                    # Continue backtracking with the new assignment
+                    result = self.backtracking()
 
-                # If the solution has not been found, remove the value to test a new one
-                self.__sudoku[cellI][cellJ].setValue(None)
+                    if result:
+                        # Solution has been found
+                        return result
 
-            # Replace the values in the domains as they were before the iteration
-            for (tmpI, tmpJ, tmpValue) in allRemovals:
-                self.__sudoku[tmpI][tmpJ].addValueToDomain(tmpValue)
+                    # If the solution has not been found, remove the value to test a new one
+                    self.__sudoku[cellI][cellJ].setValue(None)
 
-            # Reset the domain of the chosen cell as it was before the iteration
-            self.__sudoku[cellI][cellJ].setDomain(initialDomainIJ)
+                # Replace the values in the domains as they were before the iteration
+                for (tmpI, tmpJ, tmpValue) in allRemovals:
+                    self.__sudoku[tmpI][tmpJ].addValueToDomain(tmpValue)
+
+                # Reset the domain of the chosen cell as it was before the iteration
+                self.__sudoku[cellI][cellJ].setDomain(initialDomainIJ)
 
         # No solution has been found
         return False
