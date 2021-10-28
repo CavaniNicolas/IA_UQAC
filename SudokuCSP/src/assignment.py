@@ -116,29 +116,19 @@ class Assignment:
         numConstrainedCells = dict()
 
         for value in cellDomain:
-            numConstrainedCells[value] = 0
+            cellConstraints = self.getCellConstraints(i, j)
+            nConstrained = 0
 
-            if self.checkIsConsistant(i, j, value):
-                cellConstraints = self.getCellConstraints(i, j)
-                for (row, column) in cellConstraints:
-                    if not self.__sudoku[row][column].hasValue() and self.checkIsConsistant(row, column, value):
-                        numConstrainedCells[value] += 1
-            else:
-                numConstrainedCells[value] = 1000
+            for (tmpI, tmpJ) in cellConstraints:
+                if not self.__sudoku[tmpI][tmpJ].hasValue():
+                    if value in self.__sudoku[tmpI][tmpJ].getDomain():
+                        nConstrained += 1
+
+            numConstrainedCells[value] = nConstrained
 
         # Order values
-        for n in range(len(cellDomain)):
-            currentMin = float('inf')
-            currentValue = 0
-            for value in cellDomain:
-                if numConstrainedCells[value] < currentMin:
-                    currentMin = numConstrainedCells[value]
-                    currentValue = value
-
-            orderedDomainValues.append(currentValue)
-            numConstrainedCells[currentValue] = float('inf')
-
-        return orderedDomainValues
+        numConstrainedCells = dict(sorted(numConstrainedCells.items(), key=lambda item: item[1]))
+        return list(numConstrainedCells.keys())
 
     def getCellConstraints(self, i, j):
         # Return a list containing all the coordinates of the cells applying a constraint on the cell [i, j]
