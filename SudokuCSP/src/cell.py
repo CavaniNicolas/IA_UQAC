@@ -23,6 +23,9 @@ class Cell:
     def getDomain(self):
         return copy(self.__domain)
 
+    def setDomain(self, domain):
+        self.__domain = copy(domain)
+
     def getDomainSize(self):
         return len(self.__domain)
 

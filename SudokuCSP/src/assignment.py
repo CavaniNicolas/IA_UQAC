@@ -1,5 +1,6 @@
 
 from cell import Cell
+from copy import copy
 
 class Assignment:
     def __init__(self, sudoku):
@@ -81,15 +82,18 @@ class Assignment:
 
         orderedDomainValuesCell = self.orderedDomainValues(cellI, cellJ)
 
-        for value in orderedDomainValuesCell:
-            if self.forwardChecking(cellI, cellJ, value):
-                self.__sudoku[cellI][cellJ].setValue(value)
+        initialDomainIJ = self.__sudoku[cellI][cellJ].getDomain()
+        cellConstraints = self.getCellConstraints(cellI, cellJ)
 
-                cellConstraints = self.getCellConstraints(cellI, cellJ)
-                trulyRemoved = list()   # Position of the cells where the value has been truly removed from the domain
-                for (row, column) in cellConstraints:
-                    if self.__sudoku[row][column].removeValueFromDomain(value):
-                        trulyRemoved.append((row, column))
+        AC3Queue = []
+        for (tmpI, tmpJ) in cellConstraints:
+            AC3Queue.append(((tmpI, tmpJ), (cellI, cellJ)))
+
+        for value in orderedDomainValuesCell:
+            self.__sudoku[cellI][cellJ].setDomain([value])
+            allRemovals = []
+            if self.AC3(copy(AC3Queue), allRemovals):
+                self.__sudoku[cellI][cellJ].setValue(value)
 
                 result = self.backtracking()
 
@@ -98,9 +102,10 @@ class Assignment:
 
                 self.__sudoku[cellI][cellJ].setValue(None)
 
-                # Put the value back only in the domain of the cells where the value had been truly removed
-                for (row, column) in trulyRemoved:
-                    self.__sudoku[row][column].addValueToDomain(value)
+            for (tmpI, tmpJ, tmpValue) in allRemovals:
+                self.__sudoku[tmpI][tmpJ].addValueToDomain(tmpValue)
+
+            self.__sudoku[cellI][cellJ].setDomain(initialDomainIJ)
         return False
 
     def leastConstrainingValue(self, i, j):
@@ -178,11 +183,32 @@ class Assignment:
 
     def initialDomainAdjustment(self):
         # Adjust the domain of each cells at the beginning (after reading the sudoku)
+        AC3Queue = []
         for i in range(9):
             for j in range(9):
-                if not self.__sudoku[i][j].hasValue():
-                    cellConstraints = self.getCellConstraints(i, j)
+                cellConstraints = self.getCellConstraints(i, j)
+                for (tmpI, tmpJ) in cellConstraints:
+                    AC3Queue.append(((tmpI, tmpJ), (i, j)))
+        self.AC3(AC3Queue, [])
 
-                    for (row, column) in cellConstraints:
-                        if self.__sudoku[row][column].hasValue():
-                            self.__sudoku[i][j].removeValueFromDomain(self.__sudoku[row][column].getValue())
+    def AC3(self, queue, allRemovals):
+        while len(queue) > 0:
+            (i1, j1), (i2, j2) = queue.pop(0)
+            if self.removeInconsistentValues(i1, j1, i2, j2, allRemovals):
+                if self.__sudoku[i1][j1].getDomainSize() == 0:
+                    return False
+                cellConstraints = self.getCellConstraints(i1, j1)
+                for tmpI2, tmpJ2 in cellConstraints:
+                    queue.append(((tmpI2, tmpJ2), (i1, j1)))
+        return True
+
+    def removeInconsistentValues(self, i1, j1, i2, j2, allRemovals):
+        removed = False
+        domain1 = self.__sudoku[i1][j1].getDomain()
+        domain2 = self.__sudoku[i2][j2].getDomain()
+        for value1 in domain1:
+            if len(domain2) == 1 and domain2[0] == value1:
+                self.__sudoku[i1][j1].removeValueFromDomain(value1)
+                allRemovals.append((i1, j1, value1))
+                removed = True
+        return removed

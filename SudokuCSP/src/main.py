@@ -18,7 +18,7 @@ def readSudoku(filepath):
                     if line[i] == '.':
                         sudoku[currentI][currentJ] = Cell(None, [1, 2, 3, 4, 5, 6, 7, 8, 9])
                     else:
-                        sudoku[currentI][currentJ] = Cell(int(line[i]), [])
+                        sudoku[currentI][currentJ] = Cell(int(line[i]), [int(line[i])])
                     currentJ += 1
 
             currentI += 1
