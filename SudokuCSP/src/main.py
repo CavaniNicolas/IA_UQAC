@@ -56,4 +56,6 @@ if __name__ == "__main__":
     else:
         print("Ce sudoku n'a pas de solution !")
 
+    print("Consistant : " + str(finalAssignment.isConsistant()))
+
     print("Temps d'exécution moyen ({} runs) : {}".format(nbRun, totalTime / float(nbRun)))
