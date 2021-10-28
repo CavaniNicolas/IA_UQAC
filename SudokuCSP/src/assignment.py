@@ -32,6 +32,28 @@ class Assignment:
                 if not self.__sudoku[i][j].hasValue():
                     return (i, j)
 
+    def selectUnassignedCellMRV(self):
+        # MRV implementation : select the cell with the least legal values remaining
+        sudokuSize = 9
+
+        nextCell = (0, 0) # cell with mrv
+        mrv = sudokuSize # minimum remaining values
+        for i in range(sudokuSize):
+            for j in range(sudokuSize):
+                mrv_tmp = self.__sudoku[i][j].getDomainSize()
+                # if this cell is unassigned and it has less remaining values, keep this cell's coordinates and mrv
+                if (not self.__sudoku[i][j].hasValue() and mrv_tmp < mrv):
+                    mrv = mrv_tmp
+                    nextCell = (i, j)
+        return nextCell
+
+
+        pass
+
+    # To be done
+    def selectUnassignedCellDegreeHeuristic(self):
+        pass
+
     def __str__(self):
         # return sudoku in a string
         res = ""
@@ -55,7 +77,7 @@ class Assignment:
         if self.isComplete():
             return True
 
-        cellI, cellJ = self.selectUnassignedCell()
+        cellI, cellJ = self.selectUnassignedCellMRV()
 
         orderedDomainValuesCell = self.orderedDomainValues(cellI, cellJ)
 
