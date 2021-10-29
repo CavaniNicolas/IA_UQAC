@@ -1,8 +1,10 @@
 
+import time
+from copy import deepcopy
+
+from renderer import Renderer
 from assignment import Assignment
 from cell import Cell
-from time import time
-from copy import deepcopy
 
 def readSudoku(filepath):
     sudoku = [[None for j in range(9)] for i in range(9)]
@@ -22,7 +24,15 @@ def readSudoku(filepath):
             currentI += 1
     return sudoku
 
+def onRenderClose():
+    global isRunning
+    isRunning = False
+
+isRunning = True
+
 if __name__ == "__main__":
+    renderer = Renderer(onRenderClose)
+
     sudoku = readSudoku("../resources/hardSudoku.txt")
     assignment = Assignment(sudoku)
     finalAssignment = None
@@ -38,9 +48,9 @@ if __name__ == "__main__":
 
     for i in range(nbRun):
         tmpAssignment = deepcopy(assignment)
-        startTime = time()
+        startTime = time.time()
         tmpAssignment.backtracking()
-        totalTime += time() - startTime
+        totalTime += time.time() - startTime
 
         if i == (nbRun - 1):
             finalAssignment = deepcopy(tmpAssignment)
@@ -53,5 +63,8 @@ if __name__ == "__main__":
         print("Ce sudoku n'a pas de solution !")
 
     print("Consistant : " + str(finalAssignment.isConsistant()))
+
+    while isRunning:
+        time.sleep(0.2)
 
     print("Temps d'exécution moyen ({} runs) : {}".format(nbRun, totalTime / float(nbRun)))
