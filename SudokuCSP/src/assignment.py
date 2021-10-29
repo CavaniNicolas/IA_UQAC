@@ -1,11 +1,14 @@
 
 from cell import Cell
 from copy import copy
+from math import sqrt
 
 class Assignment:
     def __init__(self, sudoku):
         # Sudoku is a matrix of Cells
         self.__sudoku = sudoku
+        self.__sudokuLength = len(sudoku)
+        self.__sudokuSqrtLength = sqrt(self.__sudokuLength)
         self.initialDomainAdjustment()
 
     def isConsistant(self):
@@ -63,16 +66,26 @@ class Assignment:
     def __str__(self):
         # return sudoku in a string
         res = ""
-        for i in range(9):
-            for j in range(9):
-                res += str(self.__sudoku[i][j])
-                if j != 8 and (j + 1) % 3 == 0:
+
+        cellLength = len(str(self.__sudokuLength))
+
+        for i in range(self.__sudokuLength):
+            for j in range(self.__sudokuLength):
+                valueStr = str(self.__sudoku[i][j])
+
+                for k in range(cellLength - len(valueStr) + 1):
                     res += " "
 
-            if i != 8 :
-                if (i + 1) % 3 == 0:
-                    res += "\n"
+                res += str(self.__sudoku[i][j])
+
+                if (j + 1) % self.__sudokuSqrtLength == 0 and j < (self.__sudokuLength - 1):
+                    for k in range(cellLength):
+                        res += " "
+
+            if (i + 1) % self.__sudokuSqrtLength == 0 and i < (self.__sudokuLength - 1):
                 res += "\n"
+
+            res += "\n"
 
         return res
 
