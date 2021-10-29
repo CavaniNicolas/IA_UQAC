@@ -11,17 +11,13 @@ def readSudoku(filepath):
         for line in file:
             line = line.rstrip()
 
-            if line[0] == "-":
-                continue
-
             currentJ = 0
             for i in range(len(line)):
-                if line[i] != '|':
-                    if line[i] == '.':
-                        sudoku[currentI][currentJ] = Cell(None, [1, 2, 3, 4, 5, 6, 7, 8, 9])
-                    else:
-                        sudoku[currentI][currentJ] = Cell(int(line[i]), [int(line[i])])
-                    currentJ += 1
+                if line[i] == '.':
+                    sudoku[currentI][currentJ] = Cell(None, [1, 2, 3, 4, 5, 6, 7, 8, 9])
+                else:
+                    sudoku[currentI][currentJ] = Cell(int(line[i]), [int(line[i])])
+                currentJ += 1
 
             currentI += 1
     return sudoku
