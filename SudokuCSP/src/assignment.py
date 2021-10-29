@@ -8,13 +8,13 @@ class Assignment:
         # Sudoku is a matrix of Cells
         self.__sudoku = sudoku
         self.__sudokuLength = len(sudoku)
-        self.__sudokuSqrtLength = sqrt(self.__sudokuLength)
+        self.__sudokuSqrtLength = int(sqrt(self.__sudokuLength))
         self.initialDomainAdjustment()
 
     def isConsistant(self):
         # Check if the entire sudoku is consistant
-        for i in range(9):
-            for j in range(9):
+        for i in range(self.__sudokuLength):
+            for j in range(self.__sudokuLength):
                 if self.__sudoku[i][j].hasValue():
                     if not self.checkValueIsConsistant(i, j, self.__sudoku[i][j].getValue()):
                         return False
@@ -31,27 +31,26 @@ class Assignment:
 
     def isComplete(self):
         # Check if each cell has a value
-        for i in range(9):
-            for j in range(9):
+        for i in range(self.__sudokuLength):
+            for j in range(self.__sudokuLength):
                 if not self.__sudoku[i][j].hasValue():
                     return False
         return True
 
     def selectUnassignedCell(self):
         # Simple implementation : select the first unassigned cell
-        for i in range(9):
-            for j in range(9):
+        for i in range(self.__sudokuLength):
+            for j in range(self.__sudokuLength):
                 if not self.__sudoku[i][j].hasValue():
                     return (i, j)
 
     def selectUnassignedCellMRV(self):
         # MRV implementation : select the cell with the least legal values remaining
-        sudokuSize = 9
 
         nextCell = (0, 0) # cell with mrv
-        mrv = sudokuSize # minimum remaining values
-        for i in range(sudokuSize):
-            for j in range(sudokuSize):
+        mrv = self.__sudokuLength # minimum remaining values
+        for i in range(self.__sudokuLength):
+            for j in range(self.__sudokuLength):
                 mrv_tmp = self.__sudoku[i][j].getDomainSize()
                 # if this cell is unassigned and it has less remaining values, keep this cell's coordinates and mrv
                 if (not self.__sudoku[i][j].hasValue() and mrv_tmp < mrv):
@@ -183,21 +182,21 @@ class Assignment:
         cellConstraint = []
 
         # Entire column
-        for row in range(9):
+        for row in range(self.__sudokuLength):
             if row != i:
                 cellConstraint.append((row, j))
 
         # Entire row
-        for column in range(9):
+        for column in range(self.__sudokuLength):
             if column != j:
                 cellConstraint.append((i, column))
 
-        # Entire 3x3 square
-        squareStartI = i - i % 3
-        squareStartJ = j - j % 3
-        for row in range(3):
+        # Entire sqrt(sudokuLength)xsqrt(sudokuLength) square
+        squareStartI = i - i % self.__sudokuSqrtLength
+        squareStartJ = j - j % self.__sudokuSqrtLength
+        for row in range(self.__sudokuSqrtLength):
             currentI = squareStartI + row
-            for column in range(3):
+            for column in range(self.__sudokuSqrtLength):
                 currentJ = squareStartJ + column
                 if currentI != i and currentJ != j:
                     cellConstraint.append((currentI, currentJ))
@@ -227,8 +226,8 @@ class Assignment:
 
         # Create the arc queue with all possible arcs
         AC3Queue = []
-        for i in range(9):
-            for j in range(9):
+        for i in range(self.__sudokuLength):
+            for j in range(self.__sudokuLength):
                 cellConstraints = self.getCellConstraints(i, j)
                 for (tmpI, tmpJ) in cellConstraints:
                     AC3Queue.append(((tmpI, tmpJ), (i, j)))

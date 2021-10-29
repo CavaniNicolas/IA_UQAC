@@ -40,10 +40,6 @@ if __name__ == "__main__":
     sudoku = readSudoku("../resources/16x16.txt")
 
     assignment = Assignment(sudoku)
-    print(assignment)
-
-    exit(0)
-
     finalAssignment = None
 
     print("========= Sudoku initial =========")
