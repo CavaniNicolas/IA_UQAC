@@ -44,7 +44,7 @@ if __name__ == "__main__":
     print()
 
     totalTime = 0
-    nbRun = 20
+    nbRun = 1
 
     for i in range(nbRun):
         tmpAssignment = deepcopy(assignment)
@@ -64,7 +64,8 @@ if __name__ == "__main__":
 
     print("Consistant : " + str(finalAssignment.isConsistant()))
 
-    while isRunning:
-        time.sleep(0.2)
-
     print("Temps d'exécution moyen ({} runs) : {}".format(nbRun, totalTime / float(nbRun)))
+
+    while isRunning:
+        renderer.drawState(finalAssignment)
+        time.sleep(0.2)
