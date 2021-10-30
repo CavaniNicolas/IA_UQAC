@@ -4,7 +4,7 @@ from assignment import Assignment
 
 class Renderer:
     __squareSize = 64
-    __colors = ["magenta", "red", "light green", "light sky blue", "brown", "yellow", "pink", "grey", "orange"]
+    __colors = []
     __width = 1400
     __height = 900
 
@@ -35,11 +35,88 @@ class Renderer:
 
         self.__initDimensions()
 
+        if (self.__gridSize == 9):
+            self.__colors = ["#fff200", "#ff7f25", "#00a2e9", "#eb1c23", "#23b14d", "#ffacc8", "#b9795b", "#c8bfe6", "#eee4ae"]
+        else:
+            self.__initColors()
+
     def __initDimensions(self):
         self.__margin = 16
         self.__gridWidth = (self.__width - 4 * self.__margin) / 2
         self.__squareSize = self.__gridWidth / self.__gridSize
 
+    def __initColors(self):
+        hueStep = 360 / self.__gridSize
+
+        hue = 0 # teinte
+
+        for i in range (self.__gridSize):
+
+            # see https://www.rapidtables.com/convert/color/hsl-to-rgb.html
+            x = abs((hue / 60) % 2 - 1)
+            # round() : valeur entiere la plus proche
+            x = round(x * 255)
+
+            if (0 <= hue < 60):
+                red = 255
+                green = x
+                blue = 0
+
+            elif (60 <= hue < 120):
+                red = x
+                green = 255
+                blue = 0
+
+            elif (120 <= hue < 180):
+                red = 0
+                green = 255
+                blue = x
+
+            elif (180 <= hue < 240):
+                red = 0
+                green = x
+                blue = 255
+
+            elif (240 <= hue < 300):
+                red = x
+                green = 0
+                blue = 255
+
+            elif (300 <= hue < 360):
+                red = 255
+                green = 0
+                blue = x
+                hexa = 0
+
+            hexa = self.getHexa(red, green, blue)
+            self.__colors.append(hexa)
+
+            hue += hueStep
+
+    def getHexa(self, red, green, blue):
+        if (red == 0):
+            hexRed = "00"
+        elif (red > 0 and red < 16):
+            hexRed = "0" + hex(red).lstrip("0x")
+        else:
+            hexRed = hex(red).lstrip("0x")
+
+        if (green == 0):
+            hexGreen = "00"
+        elif (green > 0 and green < 16):
+            hexGreen = "0" + hex(green).lstrip("0x")
+        else:
+            hexGreen = hex(green).lstrip("0x")
+
+        if (blue == 0):
+            hexBlue = "00"
+        elif (blue > 0 and blue < 16):
+            hexBlue = "0" + hex(blue).lstrip("0x")
+        else:
+            hexBlue = hex(blue).lstrip("0x")
+
+        hexNum = "#" + hexRed + hexGreen + hexBlue
+        return hexNum
 
     def drawGame(self, assignments):
 
