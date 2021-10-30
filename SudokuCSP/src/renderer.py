@@ -35,7 +35,8 @@ class Renderer:
 
         self.__initDimensions()
 
-        if (self.__gridSize == 9):
+        # if (self.__gridSize == 9):
+        if (False):
             self.__colors = ["#fff200", "#ff7f25", "#00a2e9", "#eb1c23", "#23b14d", "#ffacc8", "#b9795b", "#c8bfe6", "#eee4ae"]
         else:
             self.__initColors()
@@ -49,44 +50,49 @@ class Renderer:
         hueStep = 360 / self.__gridSize
 
         hue = 0 # teinte
+        sat = 0.7 # saturation %
+        light = 0.6 # luminosite %
 
         for i in range (self.__gridSize):
 
             # see https://www.rapidtables.com/convert/color/hsl-to-rgb.html
-            x = abs((hue / 60) % 2 - 1)
-            # round() : valeur entiere la plus proche
-            x = round(x * 255)
+            c = (1 - abs(2 * light - 1)) * sat
+            x = c * abs((hue / 60) % 2 - 1)
+            m = light - c / 2
 
+            # round() : valeur entiere la plus proche
+            c = round((c + m) * 255) 
+            x = round((x + m) * 255)
+ 
             if (0 <= hue < 60):
-                red = 255
+                red = c
                 green = x
                 blue = 0
 
             elif (60 <= hue < 120):
                 red = x
-                green = 255
+                green = c
                 blue = 0
 
             elif (120 <= hue < 180):
                 red = 0
-                green = 255
+                green = c
                 blue = x
 
             elif (180 <= hue < 240):
                 red = 0
                 green = x
-                blue = 255
+                blue = c
 
             elif (240 <= hue < 300):
                 red = x
                 green = 0
-                blue = 255
+                blue = c
 
             elif (300 <= hue < 360):
-                red = 255
+                red = c
                 green = 0
                 blue = x
-                hexa = 0
 
             hexa = self.getHexa(red, green, blue)
             self.__colors.append(hexa)
