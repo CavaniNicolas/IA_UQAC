@@ -253,3 +253,6 @@ class Assignment:
                 allRemovals.append((i1, j1, value1))
                 removed = True
         return removed
+
+    def getValueAt(self, i, j):
+        return self.__sudoku[i][j].getValue()
