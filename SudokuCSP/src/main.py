@@ -67,5 +67,5 @@ if __name__ == "__main__":
     print("Temps d'exécution moyen ({} runs) : {}".format(nbRun, totalTime / float(nbRun)))
 
     while isRunning:
-        renderer.drawState(finalAssignment)
+        renderer.drawGame((assignment, finalAssignment))
         time.sleep(0.2)
