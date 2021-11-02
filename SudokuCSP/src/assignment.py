@@ -11,16 +11,16 @@ class Assignment:
         self.__sudokuSqrtLength = int(sqrt(self.__sudokuLength))
         self.initialDomainAdjustment()
 
-    def isConsistant(self):
-        # Check if the entire sudoku is consistant
+    def isConsistent(self):
+        # Check if the entire sudoku is consistent
         for i in range(self.__sudokuLength):
             for j in range(self.__sudokuLength):
                 if self.__sudoku[i][j].hasValue():
-                    if not self.checkValueIsConsistant(i, j, self.__sudoku[i][j].getValue()):
+                    if not self.checkValueIsConsistent(i, j, self.__sudoku[i][j].getValue()):
                         return False
         return True
 
-    def checkValueIsConsistant(self, i, j, value):
+    def checkValueIsConsistent(self, i, j, value):
         # Check if the given value for the cell [i, j] respects the constraints
         cellConstraints = self.getCellConstraints(i, j)
         for (row, column) in cellConstraints:
@@ -114,8 +114,8 @@ class Assignment:
 
         # Iterate through each remaining legal values (ordered by preference)
         for value in orderedDomainValues:
-            # Check if putting the value in the cell results in a consistant assignment
-            if self.checkValueIsConsistant(cellI, cellJ, value):
+            # Check if putting the value in the cell results in a consistent assignment
+            if self.checkValueIsConsistent(cellI, cellJ, value):
 
                 self.__sudoku[cellI][cellJ].setDomain([value])
 
