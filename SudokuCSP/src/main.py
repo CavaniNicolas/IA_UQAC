@@ -37,7 +37,7 @@ def readSudoku(filepath):
     return sudoku
 
 if __name__ == "__main__":
-    sudoku = readSudoku("../resources/hard16x16.txt")
+    sudoku = readSudoku("../resources/sudoku.txt")
 
     assignment = Assignment(sudoku)
     finalAssignment = None
