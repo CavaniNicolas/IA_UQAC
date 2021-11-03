@@ -72,13 +72,13 @@ class Assignment:
         res = []
         nbCellConstraints = 0
 
-        for cell in cellsList:
-            nbOtherCellConstraints = self.getNbConstraints(cell)
+        for (i, j) in cellsList:
+            nbOtherCellConstraints = self.getNbConstraints(i, j)
             if nbOtherCellConstraints > nbCellConstraints:
                 nbCellConstraints = nbOtherCellConstraints
-                res = [cell]
+                res = [(i, j)]
             elif nbOtherCellConstraints == nbCellConstraints:
-                res.append(cell)
+                res.append((i, j))
 
         return res
 
@@ -129,7 +129,7 @@ class Assignment:
             return True
 
         # Select the next cell thanks to the heuristics (MRV + Degree heuristic)
-        cellI, cellJ = self.selectUnassignedCellMRV()[0]
+        cellI, cellJ = self.selectUnassignedCellDegreeHeuristic(self.selectUnassignedCellMRV())[0]
 
         # Get the domain values ordered by preference
         orderedDomainValues = self.getOrderedDomainValues(cellI, cellJ)
