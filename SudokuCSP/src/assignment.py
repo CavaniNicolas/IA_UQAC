@@ -47,16 +47,23 @@ class Assignment:
     def selectUnassignedCellMRV(self):
         # MRV implementation : select the cell with the least legal values remaining
 
-        nextCell = (0, 0) # cell with mrv
+        res = []
         mrv = self.__sudokuLength # minimum remaining values
         for i in range(self.__sudokuLength):
             for j in range(self.__sudokuLength):
-                mrv_tmp = self.__sudoku[i][j].getDomainSize()
-                # if this cell is unassigned and it has less remaining values, keep this cell's coordinates and mrv
-                if (not self.__sudoku[i][j].hasValue() and mrv_tmp < mrv):
-                    mrv = mrv_tmp
-                    nextCell = (i, j)
-        return nextCell
+                if not self.__sudoku[i][j].hasValue():
+                    # the cell is unassigned
+                    mrv_tmp = self.__sudoku[i][j].getDomainSize()
+
+                    if mrv_tmp < mrv:
+                        # the cell has less remaining values
+                        mrv = mrv_tmp
+                        res = [(i, j)]
+                    elif mrv_tmp == mrv:
+                        # the cell has the same number of remaining values
+                        res.append((i, j))
+
+        return res
 
     def selectUnassignedCellDegreeHeuristic(self, cellsList):
         # Degree heuristic implementation : select the cells (among cellsList) with
@@ -122,7 +129,7 @@ class Assignment:
             return True
 
         # Select the next cell thanks to the heuristics (MRV + Degree heuristic)
-        cellI, cellJ = self.selectUnassignedCellMRV()
+        cellI, cellJ = self.selectUnassignedCellMRV()[0]
 
         # Get the domain values ordered by preference
         orderedDomainValues = self.getOrderedDomainValues(cellI, cellJ)
