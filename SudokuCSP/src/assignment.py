@@ -58,9 +58,34 @@ class Assignment:
                     nextCell = (i, j)
         return nextCell
 
-    # To be done
-    def selectUnassignedCellDegreeHeuristic(self):
-        pass
+    def selectUnassignedCellDegreeHeuristic(self, cellsList):
+        # Degree heuristic implementation : select the cells (among cellsList) with
+        # the more constraints on remaining variables
+
+        res = []
+        nbCellConstraints = 0
+
+        for cell in cellsList:
+            nbOtherCellConstraints = self.getNbConstraints(cell)
+            if nbOtherCellConstraints > nbCellConstraints:
+                nbCellConstraints = nbOtherCellConstraints
+                res = [cell]
+            elif nbOtherCellConstraints == nbCellConstraints:
+                res.append(cell)
+
+        return res
+
+    def getNbConstraints(self, i, j):
+        # Return the number of constraints applied by the cell (i, j) on remaining cells
+
+        nConstrained = 0
+        cellConstraints = self.getCellConstraints(i, j) # Neighbours
+
+        for (tmpI, tmpJ) in cellConstraints:
+            if not self.__sudoku[tmpI][tmpJ].hasValue():
+                nConstrained += 1
+
+        return nConstrained
 
     def __str__(self):
         # return sudoku in a string
