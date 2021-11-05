@@ -1,23 +1,26 @@
 
 from cell import Cell
 from copy import copy
+from math import sqrt
 
 class Assignment:
     def __init__(self, sudoku):
         # Sudoku is a matrix of Cells
         self.__sudoku = sudoku
+        self.__sudokuLength = len(sudoku)
+        self.__sudokuSqrtLength = int(sqrt(self.__sudokuLength))
         self.initialDomainAdjustment()
 
-    def isConsistant(self):
-        # Check if the entire sudoku is consistant
-        for i in range(9):
-            for j in range(9):
+    def isConsistent(self):
+        # Check if the entire sudoku is consistent
+        for i in range(self.__sudokuLength):
+            for j in range(self.__sudokuLength):
                 if self.__sudoku[i][j].hasValue():
-                    if not self.checkValueIsConsistant(i, j, self.__sudoku[i][j].getValue()):
+                    if not self.checkValueIsConsistent(i, j, self.__sudoku[i][j].getValue()):
                         return False
         return True
 
-    def checkValueIsConsistant(self, i, j, value):
+    def checkValueIsConsistent(self, i, j, value):
         # Check if the given value for the cell [i, j] respects the constraints
         cellConstraints = self.getCellConstraints(i, j)
         for (row, column) in cellConstraints:
@@ -28,51 +31,92 @@ class Assignment:
 
     def isComplete(self):
         # Check if each cell has a value
-        for i in range(9):
-            for j in range(9):
+        for i in range(self.__sudokuLength):
+            for j in range(self.__sudokuLength):
                 if not self.__sudoku[i][j].hasValue():
                     return False
         return True
 
     def selectUnassignedCell(self):
         # Simple implementation : select the first unassigned cell
-        for i in range(9):
-            for j in range(9):
+        for i in range(self.__sudokuLength):
+            for j in range(self.__sudokuLength):
                 if not self.__sudoku[i][j].hasValue():
                     return (i, j)
 
     def selectUnassignedCellMRV(self):
         # MRV implementation : select the cell with the least legal values remaining
-        sudokuSize = 9
 
-        nextCell = (0, 0) # cell with mrv
-        mrv = sudokuSize # minimum remaining values
-        for i in range(sudokuSize):
-            for j in range(sudokuSize):
-                mrv_tmp = self.__sudoku[i][j].getDomainSize()
-                # if this cell is unassigned and it has less remaining values, keep this cell's coordinates and mrv
-                if (not self.__sudoku[i][j].hasValue() and mrv_tmp < mrv):
-                    mrv = mrv_tmp
-                    nextCell = (i, j)
-        return nextCell
+        res = []
+        mrv = self.__sudokuLength # minimum remaining values
+        for i in range(self.__sudokuLength):
+            for j in range(self.__sudokuLength):
+                if not self.__sudoku[i][j].hasValue():
+                    # the cell is unassigned
+                    mrv_tmp = self.__sudoku[i][j].getDomainSize()
 
-    # To be done
-    def selectUnassignedCellDegreeHeuristic(self):
-        pass
+                    if mrv_tmp < mrv:
+                        # the cell has less remaining values
+                        mrv = mrv_tmp
+                        res = [(i, j)]
+                    elif mrv_tmp == mrv:
+                        # the cell has the same number of remaining values
+                        res.append((i, j))
+
+        return res
+
+    def selectUnassignedCellDegreeHeuristic(self, cellsList):
+        # Degree heuristic implementation : select the cells (among cellsList) with
+        # the more constraints on remaining variables
+
+        res = []
+        nbCellConstraints = 0
+
+        for (i, j) in cellsList:
+            nbOtherCellConstraints = self.getNbConstraints(i, j)
+            if nbOtherCellConstraints > nbCellConstraints:
+                nbCellConstraints = nbOtherCellConstraints
+                res = [(i, j)]
+            elif nbOtherCellConstraints == nbCellConstraints:
+                res.append((i, j))
+
+        return res
+
+    def getNbConstraints(self, i, j):
+        # Return the number of constraints applied by the cell (i, j) on remaining cells
+
+        nConstrained = 0
+        cellConstraints = self.getCellConstraints(i, j) # Neighbours
+
+        for (tmpI, tmpJ) in cellConstraints:
+            if not self.__sudoku[tmpI][tmpJ].hasValue():
+                nConstrained += 1
+
+        return nConstrained
 
     def __str__(self):
         # return sudoku in a string
         res = ""
-        for i in range(9):
-            for j in range(9):
-                res += str(self.__sudoku[i][j])
-                if j != 8 and (j + 1) % 3 == 0:
+
+        cellLength = len(str(self.__sudokuLength))
+
+        for i in range(self.__sudokuLength):
+            for j in range(self.__sudokuLength):
+                valueStr = str(self.__sudoku[i][j])
+
+                for k in range(cellLength - len(valueStr) + 1):
                     res += " "
 
-            if i != 8 :
-                if (i + 1) % 3 == 0:
-                    res += "\n"
+                res += str(self.__sudoku[i][j])
+
+                if (j + 1) % self.__sudokuSqrtLength == 0 and j < (self.__sudokuLength - 1):
+                    for k in range(cellLength):
+                        res += " "
+
+            if (i + 1) % self.__sudokuSqrtLength == 0 and i < (self.__sudokuLength - 1):
                 res += "\n"
+
+            res += "\n"
 
         return res
 
@@ -85,7 +129,7 @@ class Assignment:
             return True
 
         # Select the next cell thanks to the heuristics (MRV + Degree heuristic)
-        cellI, cellJ = self.selectUnassignedCellMRV()
+        cellI, cellJ = self.selectUnassignedCellDegreeHeuristic(self.selectUnassignedCellMRV())[0]
 
         # Get the domain values ordered by preference
         orderedDomainValues = self.getOrderedDomainValues(cellI, cellJ)
@@ -102,8 +146,8 @@ class Assignment:
 
         # Iterate through each remaining legal values (ordered by preference)
         for value in orderedDomainValues:
-            # Check if putting the value in the cell results in a consistant assignment
-            if self.checkValueIsConsistant(cellI, cellJ, value):
+            # Check if putting the value in the cell results in a consistent assignment
+            if self.checkValueIsConsistent(cellI, cellJ, value):
 
                 self.__sudoku[cellI][cellJ].setDomain([value])
 
@@ -170,21 +214,21 @@ class Assignment:
         cellConstraint = []
 
         # Entire column
-        for row in range(9):
+        for row in range(self.__sudokuLength):
             if row != i:
                 cellConstraint.append((row, j))
 
         # Entire row
-        for column in range(9):
+        for column in range(self.__sudokuLength):
             if column != j:
                 cellConstraint.append((i, column))
 
-        # Entire 3x3 square
-        squareStartI = i - i % 3
-        squareStartJ = j - j % 3
-        for row in range(3):
+        # Entire sqrt(sudokuLength)xsqrt(sudokuLength) square
+        squareStartI = i - i % self.__sudokuSqrtLength
+        squareStartJ = j - j % self.__sudokuSqrtLength
+        for row in range(self.__sudokuSqrtLength):
             currentI = squareStartI + row
-            for column in range(3):
+            for column in range(self.__sudokuSqrtLength):
                 currentJ = squareStartJ + column
                 if currentI != i and currentJ != j:
                     cellConstraint.append((currentI, currentJ))
@@ -214,8 +258,8 @@ class Assignment:
 
         # Create the arc queue with all possible arcs
         AC3Queue = []
-        for i in range(9):
-            for j in range(9):
+        for i in range(self.__sudokuLength):
+            for j in range(self.__sudokuLength):
                 cellConstraints = self.getCellConstraints(i, j)
                 for (tmpI, tmpJ) in cellConstraints:
                     AC3Queue.append(((tmpI, tmpJ), (i, j)))

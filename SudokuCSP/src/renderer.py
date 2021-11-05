@@ -8,10 +8,10 @@ class Renderer:
     __width = 1400
     __height = 900
 
-    __gridSize = 9
-
-    def __init__(self, onClose):
+    def __init__(self, onClose, gridSize = 9):
         turtle.pencolor("")  # No color to avoid construction lines
+
+        self.__gridSize = gridSize
 
         # initialize turtle
         self.__initTurtle(onClose)

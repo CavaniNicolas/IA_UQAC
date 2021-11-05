@@ -2,7 +2,7 @@ from copy import copy
 
 class Cell:
     def __init__(self, value = None, domain = []):
-        # Value in the cell (int from 1 to 9)
+        # Value in the cell (int from 1 to sudokuLength)
         self.__value = value
         # List of possible values for this cell
         self.__domain = domain
