@@ -38,7 +38,7 @@ def readSudoku(filepath):
                 currentJ += 1
             currentI += 1
 
-    return sudoku
+    return sudoku, sudokuLength
 
 def onRenderClose():
     global isRunning
@@ -47,9 +47,9 @@ def onRenderClose():
 isRunning = True
 
 if __name__ == "__main__":
-    renderer = Renderer(onRenderClose)
+    sudoku, sudokuLength = readSudoku("../resources/sudoku.txt")
 
-    sudoku = readSudoku("../resources/sudoku.txt")
+    renderer = Renderer(onRenderClose, sudokuLength)
 
     assignment = Assignment(sudoku)
     finalAssignment = None
