@@ -1,6 +1,7 @@
 import turtle
 
 from assignment import Assignment
+from math import sqrt
 
 class Renderer:
     __squareSize = 64
@@ -70,32 +71,24 @@ class Renderer:
             turtle.left(90)
         turtle.up()
 
-        # # draw vertical in lines
-        # turtle.pensize(3)
-        # turtle.left(90)
+        # draw vertical in lines
+        sqrtGridSize = int(sqrt(self.__gridSize))
+        turtle.pensize(3)
+        turtle.left(90)
 
-        # turtle.goto(startX + 3 * self.__squareSize, startY)
-        # turtle.down()
-        # turtle.forward(self.__gridSize * self.__squareSize + 2)
-        # turtle.up()
+        for i in range (sqrtGridSize - 1):
+            turtle.goto(startX + (i + 1) * sqrtGridSize * self.__squareSize - 1, startY)
+            turtle.down()
+            turtle.forward(self.__gridSize * self.__squareSize + 2)
+            turtle.up()
 
-        # turtle.goto(startX + 6 * self.__squareSize, startY)
-        # turtle.down()
-        # turtle.forward(self.__gridSize * self.__squareSize + 2)
-        # turtle.up()
-
-        # # draw horizontal in lines
-        # turtle.right(90)
-
-        # turtle.goto(startX, startY + 3 * self.__squareSize)
-        # turtle.down()
-        # turtle.forward(self.__gridSize * self.__squareSize + 2)
-        # turtle.up()
-
-        # turtle.goto(startX, startY + 6 * self.__squareSize)
-        # turtle.down()
-        # turtle.forward(self.__gridSize * self.__squareSize + 2)
-        # turtle.up()
+        # draw horizontal in lines
+        turtle.right(90)
+        for i in range(sqrtGridSize - 1):
+            turtle.goto(startX, startY + (i + 1) * sqrtGridSize * self.__squareSize - 1)
+            turtle.down()
+            turtle.forward(self.__gridSize * self.__squareSize + 2)
+            turtle.up()
 
         # reset pen
         turtle.pensize(0)
