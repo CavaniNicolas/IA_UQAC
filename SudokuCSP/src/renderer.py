@@ -8,13 +8,13 @@ class Renderer:
     __width = 1400
     __height = 900
 
-    def __init__(self, onClose, gridSize = 9):
+    def __init__(self, gridSize = 9):
         turtle.pencolor("")  # No color to avoid construction lines
 
         self.__gridSize = gridSize
 
         # initialize turtle
-        self.__initTurtle(onClose)
+        self.__initTurtle()
 
         # initialize dimensions needed to draw on screen
         self.__initDimensions()
@@ -40,6 +40,7 @@ class Renderer:
         self.__fillGrid(assignments[1], startX, startY)
     
         turtle.update()
+        turtle.done()
 
     def __fillGrid(self, assignment, startX, startY):
         for i in range (self.__gridSize):
@@ -119,13 +120,7 @@ class Renderer:
     ### INITIALIZATION METHODS ###
     ##############################
 
-    def __initTurtle(self, onClose):
-        # add event listener when window is closed
-        windows = turtle.Screen()
-        canvas = windows.getcanvas()
-        root = canvas.winfo_toplevel()
-        root.protocol("WM_DELETE_WINDOW", onClose)
-
+    def __initTurtle(self):
         # size of the actual window
         turtle.setup(self.__width, self.__height) 
         # set coordinates of lower left corner and upper right corner

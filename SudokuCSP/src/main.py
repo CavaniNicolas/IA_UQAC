@@ -40,16 +40,10 @@ def readSudoku(filepath):
 
     return sudoku, sudokuLength
 
-def onRenderClose():
-    global isRunning
-    isRunning = False
-
-isRunning = True
-
 if __name__ == "__main__":
     sudoku, sudokuLength = readSudoku("../resources/sudoku.txt")
 
-    renderer = Renderer(onRenderClose, sudokuLength)
+    renderer = Renderer(sudokuLength)
 
     assignment = Assignment(sudoku)
     finalAssignment = None
@@ -83,6 +77,4 @@ if __name__ == "__main__":
 
     print("Temps d'exécution moyen ({} runs) : {}".format(nbRun, totalTime / float(nbRun)))
 
-    while isRunning:
-        renderer.drawGame((assignment, finalAssignment))
-        time.sleep(0.2)
+    renderer.drawGame((assignment, finalAssignment))
