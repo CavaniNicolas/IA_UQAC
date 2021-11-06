@@ -33,7 +33,7 @@ Algorithms implemented in this CSP project :
 - Forward Checking
 - AC-3 algorithm
 
-  ![appScreenshot](Sudoku/doc/screenshot.png)
+  ![appScreenshot](SudokuCSP/doc/screenshot.PNG)
 
 ### Getting Started
 
