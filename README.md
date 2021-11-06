@@ -21,3 +21,23 @@ Four search algorithms were implemented and can be passed to the robot for him t
 ### Getting Started
 
 To run MansionCleaner, working directory must be ```src/```, then simply run ```python3 main.py```.
+
+## SudokuSolver
+
+Goal is to implement a sudoku solver using CSP method. (Constraint Satisfaction Problems)
+Algorithms implemented in this CSP project :
+- Backtracking algorithm
+- MRV Minimum Remaining Values
+- Degree Heuristic
+- Least Constraining Value
+- Forward Checking
+- AC-3 algorithm
+
+  ![appScreenshot](Sudoku/doc/screenshot.png)
+
+### Getting Started
+
+To run SudokuSolver, working directory must be ```src/```, then simply run ```python3 main.py```.
+If you want to try and solve a different sudoku, simply edit `ressources/sudoku.txt` which is the file used by the program.
+The first line has to be the size of the sudoku (can be any as long it is a regular squared sudoku)
+Fill it with numbers, empty boxes must be represented with a dot `.` and there must be a space in between every box.
