@@ -1,5 +1,8 @@
 # AI projects as part of a UQAC course
 
+1. [MansionCleaner](#mansioncleaner)
+2. [SudokuCSP](#sudokucsp)
+
 ## MansionCleaner
 
 Goal is to implement a cleaning robot for a mansion.
@@ -22,7 +25,7 @@ Four search algorithms were implemented and can be passed to the robot for him t
 
 To run MansionCleaner, working directory must be ```src/```, then simply run ```python3 main.py```.
 
-## SudokuSolver
+## SudokuCSP
 
 Goal is to implement a sudoku solver using CSP method. (Constraint Satisfaction Problems)
 Algorithms implemented in this CSP project :
